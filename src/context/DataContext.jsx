@@ -98,7 +98,7 @@ export function DataProvider({ children }) {
       readTime: newBlog.readTime || '4 min read',
       category: newBlog.category || 'General',
       author: newBlog.author || 'MAD Editorial',
-      authorAvatar: newBlog.authorAvatar || '/hummingbird.png',
+      authorAvatar: newBlog.authorAvatar || './assets/mad_logo.png',
       tags: Array.isArray(newBlog.tags) ? newBlog.tags : [],
       ...newBlog
     };
@@ -127,7 +127,7 @@ export function DataProvider({ children }) {
       summary: newProject.summary || '',
       fullStory: newProject.fullStory || '',
       techTags: Array.isArray(newProject.techTags) ? newProject.techTags : ['React'],
-      image: newProject.image || '/UI/Rectangle 1.png',
+      image: newProject.image || './UI/Rectangle 1.png',
       lighthouse: newProject.lighthouse || {
         performance: 95,
         accessibility: 95,

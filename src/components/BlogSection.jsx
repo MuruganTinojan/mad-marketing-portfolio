@@ -87,7 +87,7 @@ export default function BlogSection({ onOpenBlog }) {
               <div className="featured-blog-bottom-row">
                 <div className="featured-author-box">
                   <img
-                    src="/assets/mad_logo.png"
+                    src="./assets/mad_logo.png"
                     alt={newestBlog.author}
                     className="featured-author-avatar"
                   />

@@ -225,7 +225,7 @@ export default function ContactSection({ onInquirySuccess }) {
             <div className="contact-info-list">
               <div className="contact-info-item">
                 <div className="info-circle-badge">
-                  <img src="/Contact/1.png" alt="Email Icon" />
+                  <img src="./Contact/1.png" alt="Email Icon" />
                 </div>
                 <div className="info-text-wrap">
                   <span className="info-category-title">Email Inquiry</span>
@@ -237,7 +237,7 @@ export default function ContactSection({ onInquirySuccess }) {
 
               <div className="contact-info-item">
                 <div className="info-circle-badge">
-                  <img src="/Contact/2.png" alt="Market Coverage Icon" />
+                  <img src="./Contact/2.png" alt="Market Coverage Icon" />
                 </div>
                 <div className="info-text-wrap">
                   <span className="info-category-title">Market Coverage</span>
@@ -247,7 +247,7 @@ export default function ContactSection({ onInquirySuccess }) {
 
               <div className="contact-info-item">
                 <div className="info-circle-badge">
-                  <img src="/Contact/3.png" alt="Headquarters Location Icon" />
+                  <img src="./Contact/3.png" alt="Headquarters Location Icon" />
                 </div>
                 <div className="info-text-wrap">
                   <span className="info-category-title">Headquarters</span>
@@ -260,22 +260,22 @@ export default function ContactSection({ onInquirySuccess }) {
 
             <div className="social-icons-row">
               <a href="https://www.facebook.com/madmarketinglk" target="_blank" rel="noopener noreferrer" className="social-icon-link" aria-label="Facebook">
-                <img src="/Contact/facebook.png" alt="Facebook" />
+                <img src="./Contact/facebook.png" alt="Facebook" />
               </a>
               <a href="https://instagram.com/madmarketinglk/" target="_blank" rel="noopener noreferrer" className="social-icon-link" aria-label="Instagram">
-                <img src="/Contact/instagram.png" alt="Instagram" />
+                <img src="./Contact/instagram.png" alt="Instagram" />
               </a>
               <a href="https://linkedin.com/company/madmarketinglk" target="_blank" rel="noopener noreferrer" className="social-icon-link" aria-label="LinkedIn">
-                <img src="/Contact/linkedin.png" alt="LinkedIn" />
+                <img src="./Contact/linkedin.png" alt="LinkedIn" />
               </a>
               <a href="https://pin.it/2Z5zegCyZ" target="_blank" rel="noopener noreferrer" className="social-icon-link" aria-label="Pinterest">
-                <img src="/Contact/pinterest.png" alt="Pinterest" />
+                <img src="./Contact/pinterest.png" alt="Pinterest" />
               </a>
               <a href="https://www.tiktok.com/@mad.marketing43" target="_blank" rel="noopener noreferrer" className="social-icon-link" aria-label="TikTok">
-                <img src="/Contact/tiktok.png" alt="TikTok" />
+                <img src="./Contact/tiktok.png" alt="TikTok" />
               </a>
               <a href="https://www.youtube.com/@madmarketinglk" target="_blank" rel="noopener noreferrer" className="social-icon-link" aria-label="YouTube">
-                <img src="/Contact/youtube.png" alt="YouTube" />
+                <img src="./Contact/youtube.png" alt="YouTube" />
               </a>
             </div>
           </div>

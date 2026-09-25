@@ -8,7 +8,7 @@ export const defaultBlogs = [
     category: "Enterprise Architecture",
     image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop",
     author: "MAD LABS Engineering",
-    authorAvatar: "/assets/madlabs.png",
+    authorAvatar: "./assets/madlabs.png",
     excerpt: "As regional enterprises across Dubai, Riyadh, and Doha invest billions into modernization, the market is quickly differentiating between superficial consultants and teams that bring tested, live code to the table.",
     content: `Regional enterprises in the United Arab Emirates and Saudi Arabia are undergoing one of the fastest digital transformations in economic history. Under Vision 2030 and Dubai Economic Agenda D33, institutions are no longer satisfied with advisory slide decks or standard software packages that fail under regional regulatory constraints.
 
@@ -33,7 +33,7 @@ The next era of Gulf digital expansion belongs to operators who can demonstrate 
     category: "Marketing Strategy",
     image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop",
     author: "MAD Creative Group",
-    authorAvatar: "/assets/madlabs.png",
+    authorAvatar: "./assets/madlabs.png",
     excerpt: "Media budgets only accelerate what already resonates. Exploring how behavioral anthropology and organic content testing form the bedrock of sustainable ROI.",
     content: `A brand that has not earned organic attention has no foundation to build paid performance on. This is why we always start with organic—building content that is purposeful, researched, and genuinely valuable to the audience.
 
@@ -58,7 +58,7 @@ Organic performance reveals the answers naturally. When an organic concept organ
     category: "Web & Performance",
     image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1200&auto=format&fit=crop",
     author: "MAD Web Core",
-    authorAvatar: "/assets/madlabs.png",
+    authorAvatar: "./assets/madlabs.png",
     excerpt: "Every 100ms latency reduction increases checkout conversions by 1.1%. How we optimize bundle payloads, critical rendering paths, and asset delivery.",
     content: `Speed is not an engineering vanity metric; it is an economic lever. In modern digital commerce, mobile users decide whether to trust a brand within the first 1,500 milliseconds of page delivery.
 
@@ -84,7 +84,7 @@ The result is instant responsiveness that satisfies Google's Core Web Vitals and
     category: "System Automation",
     image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop",
     author: "MAD LABS Engineering",
-    authorAvatar: "/assets/madlabs.png",
+    authorAvatar: "./assets/madlabs.png",
     excerpt: "How we engineered the Alliance of Independent Agencies Deal House platform to eliminate daily developer dependencies through role-based access.",
     content: `When managing hundreds of independent member organizations across the UK, operational agility is paramount. Traditional software maintenance models force non-technical executives to submit engineering tickets for even minor promotional banners or deal submissions.
 

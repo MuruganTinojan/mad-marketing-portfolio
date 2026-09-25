@@ -7,7 +7,7 @@
 
 @font-face {
   font-family: 'Pentagra';
-  src: url('/assets/fonts/Pentagra.ttf') format('truetype');
+  src: url('./assets/fonts/Pentagra.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -15,7 +15,7 @@
 
 @font-face {
   font-family: 'Armada';
-  src: url('/assets/fonts/Armada Regular.otf') format('opentype');
+  src: url('./assets/fonts/Armada Regular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -23,7 +23,7 @@
 
 @font-face {
   font-family: 'Armada';
-  src: url('/assets/fonts/Armada Bold.otf') format('opentype');
+  src: url('./assets/fonts/Armada Bold.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;

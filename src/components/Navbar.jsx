@@ -43,7 +43,7 @@ export default function Navbar({ activeSection }) {
     <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
       <div className="nav-container">
         <a href="#why-mad" className="nav-brand" aria-label="MAD Marketing Home">
-          <img src="/assets/mad_logo.png" alt="MAD Marketing" className="nav-logo" />
+          <img src="./assets/mad_logo.png" alt="MAD Marketing" className="nav-logo" />
         </a>
 
         <nav className={`nav-menu ${mobileOpen ? 'open' : ''}`}>

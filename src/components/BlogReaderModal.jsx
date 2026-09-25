@@ -42,7 +42,7 @@ export default function BlogReaderModal({ blog, onClose }) {
           <div className="blog-reader-meta-bar">
             <div className="blog-reader-author-info">
               <img
-                src={blog.authorAvatar || '/assets/mad_logo.png'}
+                src={blog.authorAvatar || './assets/mad_logo.png'}
                 alt={blog.author}
                 className="blog-author-avatar-small"
               />

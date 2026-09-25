@@ -36,7 +36,7 @@ export default function HeroSection() {
             <div className="hero-visual-stage">
               <div className="hummingbird-glow-backdrop" aria-hidden="true"></div>
               <img
-                src="/assets/hummingbird.png"
+                src="./assets/hummingbird.png"
                 alt="MAD Marketing Glowing Hummingbird"
                 className="hummingbird-img"
                 loading="eager"

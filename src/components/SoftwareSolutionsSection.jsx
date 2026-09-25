@@ -13,17 +13,17 @@ export default function SoftwareSolutionsSection() {
 
   const solutions = portalData?.solutions || [
     {
-      icon: '/4.png',
+      icon: './4.png',
       title: 'Custom API & Plugin Development',
       info: 'Rebuilding payment gateways, merchant integration models, and automated platform triggers that hook directly into Shopify, WooCommerce, and CRM ecosystems.'
     },
     {
-      icon: '/5.png',
+      icon: './5.png',
       title: 'B2B Agent & Member Marketplace Portals',
       info: 'Platform solutions built with role-based dashboard architectures, dynamic subscriptions, document management pipelines, and onboarding checklists.'
     },
     {
-      icon: '/7.png',
+      icon: './7.png',
       title: 'Automated Booking & Meeting Engines',
       info: 'Direct synchronizations with Google/Outlook calendars, auto-generating dynamic meeting channels, notifications, and client routing models.'
     }
@@ -118,7 +118,7 @@ export default function SoftwareSolutionsSection() {
             className="btn-madlabs"
             onClick={() => window.open(portalData?.actionButtonUrl || 'https://madlabs.lk', '_blank')}
           >
-            <img src="/madlabs_logo.png" alt="MAD Labs Symbol" />{' '}
+            <img src="./madlabs_logo.png" alt="MAD Labs Symbol" />{' '}
             {portalData?.actionButtonText || 'Explore MAD labs Portfolio'}
           </button>
         </div>

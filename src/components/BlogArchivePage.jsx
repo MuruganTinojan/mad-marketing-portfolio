@@ -39,7 +39,7 @@ export default function BlogArchivePage({ onBackToHome, onOpenBlog }) {
               <i className="fa-solid fa-arrow-left"></i> Back to Portfolio
             </button>
             <div className="archive-logo-divider"></div>
-            <img src="/assets/mad_logo.png" alt="MAD Marketing" className="archive-nav-logo" />
+            <img src="./assets/mad_logo.png" alt="MAD Marketing" className="archive-nav-logo" />
           </div>
 
           <div className="archive-nav-right">
@@ -155,7 +155,7 @@ export default function BlogArchivePage({ onBackToHome, onOpenBlog }) {
                     <div className="archive-card-footer">
                       <div className="archive-author-inline">
                         <img
-                          src={blog.authorAvatar || '/assets/mad_logo.png'}
+                          src={blog.authorAvatar || './assets/mad_logo.png'}
                           alt={blog.author}
                           className="archive-author-avatar-tiny"
                         />
