@@ -1,31 +1,47 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useData } from '../context/DataContext';
+import { getBlogSlug } from '../utils/slugify';
+import Footer from './Footer';
+
+const FIXED_CATEGORIES = ['All', 'Web', 'SEO', 'UX', 'Marketing', 'Design'];
+const FALLBACK_THUMB = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop';
 
 export default function BlogArchivePage({ onBackToHome, onOpenBlog }) {
   const { blogs } = useData();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Extract unique categories
-  const categories = useMemo(() => {
-    const set = new Set(['All']);
-    blogs.forEach((b) => {
-      if (b.category) set.add(b.category);
-    });
-    return Array.from(set);
-  }, [blogs]);
+  // Scroll to top on mount and set page title
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const originalTitle = document.title;
+    document.title = 'Publications & Strategic Insights | MAD Marketing';
+    return () => {
+      document.title = originalTitle;
+    };
+  }, []);
 
-  // Filtered blogs
+  // Filtered blogs based on Category & Search Query
   const filteredBlogs = useMemo(() => {
     return blogs.filter((blog) => {
-      const matchesCat = selectedCategory === 'All' || blog.category === selectedCategory;
+      const matchesCat =
+        selectedCategory === 'All' ||
+        (blog.category && blog.category.toLowerCase() === selectedCategory.toLowerCase());
+
       const q = searchQuery.toLowerCase().trim();
-      const matchesSearch =
-        !q ||
-        blog.title.toLowerCase().includes(q) ||
-        blog.excerpt.toLowerCase().includes(q) ||
+      if (!q) return matchesCat;
+
+      const titleMatch = blog.title && blog.title.toLowerCase().includes(q);
+      const excerptMatch =
+        (blog.excerpt && blog.excerpt.toLowerCase().includes(q)) ||
+        (blog.metaDescription && blog.metaDescription.toLowerCase().includes(q));
+      const keywordMatch =
+        (blog.targetKeywords && blog.targetKeywords.toLowerCase().includes(q)) ||
         (blog.tags && blog.tags.some((t) => t.toLowerCase().includes(q)));
-      return matchesCat && matchesSearch;
+      const contentMatch =
+        blog.content && typeof blog.content === 'string' && blog.content.toLowerCase().includes(q);
+
+      return matchesCat && (titleMatch || excerptMatch || keywordMatch || contentMatch);
     });
   }, [blogs, selectedCategory, searchQuery]);
 
@@ -35,16 +51,29 @@ export default function BlogArchivePage({ onBackToHome, onOpenBlog }) {
       <header className="archive-navbar">
         <div className="archive-nav-container">
           <div className="archive-nav-left">
-            <button className="btn-archive-back" onClick={onBackToHome} aria-label="Back to main portfolio">
+            <button
+              className="btn-archive-back"
+              onClick={onBackToHome}
+              aria-label="Back to main portfolio"
+            >
               <i className="fa-solid fa-arrow-left"></i> Back to Portfolio
             </button>
             <div className="archive-logo-divider"></div>
-            <img src="./assets/mad_logo.png" alt="MAD Marketing" className="archive-nav-logo" />
+            <a
+              href="#why-mad"
+              onClick={(e) => {
+                e.preventDefault();
+                onBackToHome();
+              }}
+              className="archive-brand-link"
+            >
+              <img src="./assets/mad_logo.png" alt="MAD Marketing" className="archive-nav-logo" />
+            </a>
           </div>
 
           <div className="archive-nav-right">
-            <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-              <i className="fa-solid fa-book-open"></i> Publications Archive
+            <span className="archive-publications-count-badge">
+              <i className="fa-solid fa-book-open"></i> {blogs.length} Articles
             </span>
           </div>
         </div>
@@ -55,22 +84,25 @@ export default function BlogArchivePage({ onBackToHome, onOpenBlog }) {
         <div className="container">
           <span className="section-badge">EDITORIAL & RESEARCH</span>
           <h1 className="archive-hero-title">
-            Perspectives, Case Breakdowns & <span className="gradient-text">Engineering Insights</span>
+            Perspectives, Case Breakdowns &{' '}
+            <span className="gradient-text">Engineering Insights</span>
           </h1>
           <p className="archive-hero-subtitle">
-            Exploring the intersection of enterprise cloud architectures, human audience psychology, and high-conversion digital experiences.
+            Exploring the intersection of modern web architecture, local search dominance, high-conversion UX, and performance marketing in Sri Lanka and regional markets.
           </p>
 
-          {/* Search & Filter Controls */}
+          {/* Search & Filter Controls Bar */}
           <div className="archive-controls-bar">
+            {/* Search Input */}
             <div className="archive-search-box">
-              <i className="fa-solid fa-magnifying-glass search-icon"></i>
+              <i className="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
               <input
                 type="text"
                 className="archive-search-input"
-                placeholder="Search articles by title, keywords, tech stack..."
+                placeholder="Search articles by title, keywords, or topics..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search articles"
               />
               {searchQuery && (
                 <button
@@ -83,16 +115,22 @@ export default function BlogArchivePage({ onBackToHome, onOpenBlog }) {
               )}
             </div>
 
-            <div className="archive-category-pills">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  className={`archive-cat-btn ${selectedCategory === cat ? 'active' : ''}`}
-                  onClick={() => setSelectedCategory(cat)}
-                >
-                  {cat}
-                </button>
-              ))}
+            {/* Controlled Category Filter Pills */}
+            <div className="archive-category-pills" role="tablist" aria-label="Article categories">
+              {FIXED_CATEGORIES.map((cat) => {
+                const isActive = selectedCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    role="tab"
+                    aria-selected={isActive}
+                    className={`archive-cat-btn ${isActive ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory(cat)}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -103,9 +141,11 @@ export default function BlogArchivePage({ onBackToHome, onOpenBlog }) {
         <div className="container">
           {filteredBlogs.length === 0 ? (
             <div className="archive-empty-state">
-              <i className="fa-regular fa-folder-open empty-icon"></i>
+              <i className="fa-regular fa-folder-open empty-icon" aria-hidden="true"></i>
               <h3>No articles found</h3>
-              <p>Try adjusting your search query or switching categories.</p>
+              <p>
+                No publications matched your current filter criteria ({selectedCategory !== 'All' ? `Category: ${selectedCategory}` : ''}{searchQuery ? `, Query: "${searchQuery}"` : ''}).
+              </p>
               <button
                 className="btn btn-secondary"
                 onClick={() => {
@@ -113,89 +153,96 @@ export default function BlogArchivePage({ onBackToHome, onOpenBlog }) {
                   setSelectedCategory('All');
                 }}
               >
-                Reset Filters
+                Reset All Filters
               </button>
             </div>
           ) : (
             <div className="archive-blogs-grid">
-              {filteredBlogs.map((blog, idx) => (
-                <article
-                  key={blog.id}
-                  className="archive-blog-card"
-                  onClick={() => onOpenBlog(blog)}
-                >
-                  <div className="archive-card-image-wrap">
-                    <img
-                      src={blog.image}
-                      alt={blog.title}
-                      className="archive-card-img"
-                      loading="lazy"
-                    />
-                    <span className="archive-card-category">{blog.category}</span>
-                    {idx === 0 && selectedCategory === 'All' && !searchQuery && (
-                      <span className="archive-newest-badge">LATEST</span>
-                    )}
-                  </div>
+              {filteredBlogs.map((blog, idx) => {
+                const imageSrc = blog.img || blog.image || FALLBACK_THUMB;
+                const pubDate = blog.publishDate || blog.date || 'Recent';
+                const readTime = blog.readTime || '4 min read';
+                const excerptText =
+                  blog.metaDescription ||
+                  blog.excerpt ||
+                  blog['content-1'] ||
+                  'Discover how strategic engineering and audience resonance accelerate digital growth.';
+                const slug = getBlogSlug(blog);
 
-                  <div className="archive-card-body">
-                    <div className="archive-card-meta">
-                      <span>
-                        <i className="fa-regular fa-calendar"></i> {blog.date}
-                      </span>
-                      <span>&bull;</span>
-                      <span>
-                        <i className="fa-regular fa-clock"></i> {blog.readTime}
-                      </span>
+                return (
+                  <article
+                    key={blog.id || idx}
+                    className="archive-blog-card"
+                    onClick={() => onOpenBlog(blog)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        onOpenBlog(blog);
+                      }
+                    }}
+                    aria-label={`Read article: ${blog.title}`}
+                  >
+                    <div className="archive-card-image-wrap">
+                      <img
+                        src={imageSrc}
+                        alt={blog.title}
+                        className="archive-card-img"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.target.src = FALLBACK_THUMB;
+                        }}
+                      />
+                      <span className="archive-card-category">{blog.category}</span>
+                      {idx === 0 && selectedCategory === 'All' && !searchQuery && (
+                        <span className="archive-newest-badge">LATEST</span>
+                      )}
                     </div>
 
-                    <h2 className="archive-card-title">{blog.title}</h2>
-
-                    <p className="archive-card-excerpt">{blog.excerpt}</p>
-
-                    <div className="archive-card-footer">
-                      <div className="archive-author-inline">
-                        <img
-                          src={blog.authorAvatar || './assets/mad_logo.png'}
-                          alt={blog.author}
-                          className="archive-author-avatar-tiny"
-                        />
-                        <span className="archive-author-name-text">{blog.author}</span>
+                    <div className="archive-card-body">
+                      <div className="archive-card-meta">
+                        <span>
+                          <i className="fa-regular fa-calendar"></i> {pubDate}
+                        </span>
+                        <span>&bull;</span>
+                        <span>
+                          <i className="fa-regular fa-clock"></i> {readTime}
+                        </span>
                       </div>
 
-                      <span className="archive-read-link">
-                        Read Story <i className="fa-solid fa-arrow-right"></i>
-                      </span>
+                      <h2 className="archive-card-title">{blog.title}</h2>
+
+                      <p className="archive-card-excerpt">
+                        {typeof excerptText === 'string' && excerptText.length > 150
+                          ? excerptText.substring(0, 150) + '...'
+                          : excerptText}
+                      </p>
+
+                      <div className="archive-card-footer">
+                        <div className="archive-author-inline">
+                          <img
+                            src="./assets/mad_logo.png"
+                            alt="MAD Marketing"
+                            className="archive-author-avatar-tiny"
+                          />
+                          <span className="archive-author-name-text">MAD Editorial</span>
+                        </div>
+
+                        <span className="archive-read-link">
+                          Read Story <i className="fa-solid fa-arrow-right"></i>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </article>
-              ))}
+                  </article>
+                );
+              })}
             </div>
           )}
         </div>
       </main>
 
-      {/* Footer Banner */}
-      <footer className="archive-bottom-banner">
-        <div className="container">
-          <div className="archive-footer-box">
-            <div>
-              <h3>Have a high-stakes project in mind?</h3>
-              <p>Let's architect a solution that moves your metrics.</p>
-            </div>
-            <button
-              className="btn btn-gradient"
-              onClick={() => {
-                onBackToHome();
-                setTimeout(() => {
-                  window.location.hash = '#contact';
-                }, 100);
-              }}
-            >
-              Get in Touch <i className="fa-solid fa-arrow-right"></i>
-            </button>
-          </div>
-        </div>
-      </footer>
+      {/* Global Site Footer */}
+      <Footer />
     </div>
   );
 }

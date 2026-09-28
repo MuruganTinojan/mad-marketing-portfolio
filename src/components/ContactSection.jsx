@@ -65,7 +65,7 @@ export default function ContactSection({ onInquirySuccess }) {
       localStorage.setItem('mad_inquiries', JSON.stringify(submissions));
 
       // Format WhatsApp notification for +94763555873
-      const waNumber = '94763555873';
+      const waNumber = '94766343111';
       const waLines = [
         `*🚀 New Inquiry from MAD Marketing Portfolio*`,
         ``,

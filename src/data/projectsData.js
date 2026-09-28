@@ -8,7 +8,7 @@ export const projectsData = [
     summary: "AIA came to us with an existing platform that needed to work smarter. Over the course of a year - and counting - we have rebuilt, refined and expanded their web presence through ongoing WordPress development, performance optimizations, CRM-integrated landing pages, and backend streamlining that lets their team move independently without relying on developers or third parties for minor updates.",
     fullStory: "One of the most recent outcomes of this is the Alliance of Media Independents Deal House - a custom-built Platform featuring advanced role-based access, membership subscriptions and more - allowing member agencies to post and browse exclusive deals within the Alliance network.\n\nAIA remains an active retainer client of MAD Marketing.",
     techTags: ["WordPress", "CRM Sync", "Deal House", "Retainer"],
-    image: "./UI/Frame 34.png",
+    image: "./showcase/allindependentagencies.org.jpeg",
     lighthouse: {
       performance: 96,
       accessibility: 98,
@@ -27,7 +27,7 @@ export const projectsData = [
     summary: "Full student journey redesign and build with custom CyberSource payment gateway, marketing integrations, instant chat, and SEO optimization.",
     fullStory: "VXL Education required a robust digital presence to facilitate international university placements for Sri Lankan students. We engineered an end-to-end platform incorporating custom CyberSource payment processing, automated course discovery engines, and instant WhatsApp consultation triggers that boosted student inquiries by 140%.",
     techTags: ["WordPress", "CyberSource", "API Sync", "SEO Lead Gen"],
-    image: "./UI/www.vxl.lk.jpeg",
+    image: "./showcase/www.vxl.lk.jpeg",
     lighthouse: {
       performance: 95,
       accessibility: 96,
@@ -46,7 +46,7 @@ export const projectsData = [
     summary: "Blazing-fast product showcase site replacing checkout with a WhatsApp lead funnel to capture intent instantly and fuel qualified inquiries.",
     fullStory: "For Sri Lanka's premier plastics manufacturer, traditional e-commerce cart abandonment was eliminated by replacing the checkout workflow with a direct WhatsApp instant-quote engine. Built with React and optimized for extreme mobile performance across emerging network conditions.",
     techTags: ["React", "TypeScript", "TailwindCSS", "WhatsApp API"],
-    image: "./UI/Rectangle 1.png",
+    image: "./showcase/goldlineplastic.jpeg",
     lighthouse: {
       performance: 99,
       accessibility: 98,
@@ -65,7 +65,7 @@ export const projectsData = [
     summary: "B2B marketplace for the study abroad sector featuring complex agent portals, automated onboarding flows, and scalable infrastructure.",
     fullStory: "A massive multi-tenant platform empowering educational recruiters across multiple continents. Features dynamic commission reconciliation, automated partner onboarding checklists, verification workflows, and secure institutional databases.",
     techTags: ["React", "B2B Platform", "Agent Portal", "Automation"],
-    image: "./UI/www.apply2xl.com.jpeg",
+    image: "./showcase/www.apply2xl.com.jpeg",
     lighthouse: {
       performance: 94,
       accessibility: 95,
@@ -84,7 +84,7 @@ export const projectsData = [
     summary: "Custom mirror of the AIA UK site designed specifically for the GCC market, featuring bloat-free database architecture and ACF backend integration.",
     fullStory: "Expanding the Alliance of Independent Agencies into Dubai and the GCC region. Engineered with clean, custom Advanced Custom Fields (ACF) architecture, region-specific membership routing, and accelerated caching.",
     techTags: ["WordPress", "ACF Pro", "Mirror Architecture", "Optimization"],
-    image: "./UI/Rectangle 1-1.png",
+    image: "./showcase/allindependentagenciesme.org.jpeg",
     lighthouse: {
       performance: 97,
       accessibility: 96,
@@ -103,7 +103,7 @@ export const projectsData = [
     summary: "Fully automated booking and client onboarding platform with direct calendar synchronization, online payments, and email invites.",
     fullStory: "Built for certified Australian migration practitioners. The platform integrates calendar schedules with payment validation, auto-provisioning secure consultation video links and preparatory intake questionnaires prior to client meetings.",
     techTags: ["WordPress", "Calendar Sync", "Auto Meetings", "Retainer Client"],
-    image: "./UI/Rectangle 1-2.png",
+    image: "./showcase/www.vxlmigration.com.au.jpeg",
     lighthouse: {
       performance: 96,
       accessibility: 97,
@@ -122,7 +122,7 @@ export const projectsData = [
     summary: "Complete branding package, visual guidelines, and corporate website representing a high-level Canadian IT modernization consultancy.",
     fullStory: "Neesh Inc guides North American enterprises through legacy system migration to modern cloud paradigms. MAD Marketing designed the entire brand identity, typography, corporate narrative, and bespoke web portal.",
     techTags: ["Branding", "Guidelines", "Web Design", "IT Consultancy"],
-    image: "./UI/Rectangle 1-3.png",
+    image: "./showcase/neeshinc.png",
     lighthouse: {
       performance: 98,
       accessibility: 96,
@@ -141,7 +141,7 @@ export const projectsData = [
     summary: "UX and SEO-driven educational website featuring conversion-optimized program pages and structured student inquiry funnels.",
     fullStory: "A comprehensive digital overhaul for Kingsford College of Business & Technology. Structured around conversion psychology, student eligibility quizzes, and multi-tier department landing pages designed to rank on high-volume keywords.",
     techTags: ["UX Audit", "SEO Lead Gen", "Funnels", "Education"],
-    image: "./UI/kingsford.jpeg",
+    image: "./showcase/kingsford.jpeg",
     lighthouse: {
       performance: 95,
       accessibility: 97,
@@ -160,7 +160,7 @@ export const projectsData = [
     summary: "Premium web presence and brand concept mapping the heritage, craft, and organic narrative of high-grade Sri Lankan spice exports.",
     fullStory: "Bridging Ceylon's centuries-old spice cultivation craft with discerning culinary markets in Canada. We produced a visually rich, narrative-driven digital journey detailing farm origins, ethical harvest, and lab certifications.",
     techTags: ["Branding", "Storytelling", "Exporters", "Visual Heritage"],
-    image: "./UI/www.neeshspice.ca.jpeg",
+    image: "./showcase/www.neeshspice.ca.jpeg",
     lighthouse: {
       performance: 97,
       accessibility: 96,
@@ -179,7 +179,7 @@ export const projectsData = [
     summary: "Pro-bono digital transformation providing a modern, accessible, responsive, and SEO-optimized website for child welfare advocacy.",
     fullStory: "As part of our commitment to social impact, MAD Marketing contributed full design and engineering pro-bono to rebuild the digital voice of one of Sri Lanka's oldest and most respected child welfare councils. Adheres strictly to WCAG 2.1 AA accessibility guidelines.",
     techTags: ["Pro-Bono", "Accessibility", "SEO", "Responsive"],
-    image: "./UI/www.nccyw.org.jpeg",
+    image: "./showcase/www.nccyw.org.jpeg",
     lighthouse: {
       performance: 98,
       accessibility: 100,
@@ -198,7 +198,7 @@ export const projectsData = [
     summary: "Brand narrative, domain resolution, copyright dispute handling, and fully custom website for a premium exporter of custom hats.",
     fullStory: "MAD Marketing handled intellectual property domain negotiations and structured an immersive digital catalog for an avant-garde apparel label. Focuses on artisanal craftsmanship and global bespoke order processing.",
     techTags: ["Brand Narrative", "IP Dispute", "Domain Setup", "Fashion Web"],
-    image: "./UI/www.themadhatter.lk.jpeg",
+    image: "./showcase/www.themadhatter.lk.jpeg",
     lighthouse: {
       performance: 96,
       accessibility: 95,
@@ -208,6 +208,21 @@ export const projectsData = [
     clientType: "Fashion & Bespoke Apparel",
     keyOutcome: "Secured international trademark clarity and expanded direct exports to Europe and Japan."
   }
+];
+
+export const showcaseGallery = [
+  { label: "The Alliance of Independent Agencies (UK)", file: "./showcase/allindependentagencies.org.jpeg" },
+  { label: "VXL Education (Sri Lanka)", file: "./showcase/www.vxl.lk.jpeg" },
+  { label: "Goldline Plastic (Sri Lanka)", file: "./showcase/goldlineplastic.jpeg" },
+  { label: "Apply2XL Global Marketplace", file: "./showcase/www.apply2xl.com.jpeg" },
+  { label: "AIA Middle East (GCC)", file: "./showcase/allindependentagenciesme.org.jpeg" },
+  { label: "VXL Migration & Education (Australia)", file: "./showcase/www.vxlmigration.com.au.jpeg" },
+  { label: "Neesh Inc IT Consulting (Canada)", file: "./showcase/neeshinc.png" },
+  { label: "Kingsford College (Sri Lanka)", file: "./showcase/kingsford.jpeg" },
+  { label: "Neesh Spice Exporters (Canada)", file: "./showcase/www.neeshspice.ca.jpeg" },
+  { label: "NCCYW National Council (Sri Lanka)", file: "./showcase/www.nccyw.org.jpeg" },
+  { label: "The Madhatter Bespoke Apparel (Sri Lanka)", file: "./showcase/www.themadhatter.lk.jpeg" },
+  { label: "AIA Deal House Mockup (Frame 34)", file: "./showcase/Frame 34.png" }
 ];
 
 export const clientLogos = [

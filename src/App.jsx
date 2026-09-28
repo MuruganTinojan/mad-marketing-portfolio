@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { DataProvider } from './context/DataContext';
+import React, { useState, useEffect, useCallback } from 'react';
+import { DataProvider, useData } from './context/DataContext';
 import Navbar from './components/Navbar';
 import SideProgress from './components/SideProgress';
 import HeroSection from './components/HeroSection';
@@ -14,36 +14,85 @@ import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import CaseStudyModal from './components/CaseStudyModal';
 import SuccessModal from './components/SuccessModal';
-import BlogReaderModal from './components/BlogReaderModal';
 import BlogArchivePage from './components/BlogArchivePage';
+import BlogArticlePage from './components/BlogArticlePage';
 import AdminDashboard from './components/AdminDashboard';
+import { getBlogSlug } from './utils/slugify';
+
+function parseCurrentRoute() {
+  const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
+  const hash = window.location.hash;
+
+  // 1. Admin route
+  if (hash === '#admin') {
+    return { page: 'admin' };
+  }
+
+  // 2. Blog listing (/blog or #blogs or #/blog)
+  if (pathname === '/blog' || hash === '#blogs' || hash === '#/blog') {
+    return { page: 'blog-archive' };
+  }
+
+  // 3. Blog article (/blog/:slug or #/blog/:slug or #blog/:slug)
+  if (pathname.startsWith('/blog/')) {
+    const slug = pathname.replace('/blog/', '').trim();
+    if (slug) return { page: 'blog-article', slug };
+  }
+  if (hash.startsWith('#/blog/')) {
+    const slug = hash.replace('#/blog/', '').trim();
+    if (slug) return { page: 'blog-article', slug };
+  }
+  if (hash.startsWith('#blog/')) {
+    const slug = hash.replace('#blog/', '').trim();
+    if (slug) return { page: 'blog-article', slug };
+  }
+
+  // Default home
+  return { page: 'home' };
+}
 
 function MainApp() {
+  const { getBlogBySlug } = useData();
   const [activeSection, setActiveSection] = useState('why-mad');
   const [selectedProject, setSelectedProject] = useState(null);
-  const [selectedBlog, setSelectedBlog] = useState(null);
   const [successData, setSuccessData] = useState(null);
   const [spotlightPos, setSpotlightPos] = useState({ x: -500, y: -500 });
-  const [viewMode, setViewMode] = useState('home'); // 'home' | 'blogs' | 'admin'
+  const [currentRoute, setCurrentRoute] = useState(() => parseCurrentRoute());
 
-  // Hash-based view switching & browser back/forward support
+  // Listen to popstate and hashchange for backward/forward navigation
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash;
-      if (hash === '#blogs') {
-        setViewMode('blogs');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (hash === '#admin') {
-        setViewMode('admin');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        setViewMode('home');
-      }
+    const handleLocationChange = () => {
+      setCurrentRoute(parseCurrentRoute());
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    handleHashChange();
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handleLocationChange);
+    window.addEventListener('hashchange', handleLocationChange);
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('hashchange', handleLocationChange);
+    };
+  }, []);
+
+  // Safe navigation helper supporting pushState and fallback hash
+  const navigateTo = useCallback((targetUrl) => {
+    try {
+      window.history.pushState({}, '', targetUrl);
+      setCurrentRoute(parseCurrentRoute());
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch {
+      // Fallback for file:// or restricted environments
+      if (targetUrl === '/blog') {
+        window.location.hash = '#blogs';
+      } else if (targetUrl.startsWith('/blog/')) {
+        const slug = targetUrl.replace('/blog/', '');
+        window.location.hash = `#/blog/${slug}`;
+      } else {
+        window.location.hash = '#why-mad';
+      }
+      setCurrentRoute(parseCurrentRoute());
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }, []);
 
   // Mouse spotlight tracker
@@ -57,7 +106,7 @@ function MainApp() {
 
   // IntersectionObserver for tracking active section on Home page
   useEffect(() => {
-    if (viewMode !== 'home') return;
+    if (currentRoute.page !== 'home') return;
 
     const sectionIds = [
       'why-mad',
@@ -92,40 +141,47 @@ function MainApp() {
     });
 
     return () => observer.disconnect();
-  }, [viewMode]);
+  }, [currentRoute.page]);
 
-  // If in Admin Dashboard view
-  if (viewMode === 'admin') {
+  // View: Admin Dashboard
+  if (currentRoute.page === 'admin') {
     return (
       <AdminDashboard
-        onBackToSite={() => {
-          window.location.hash = '#why-mad';
+        onBackToSite={() => navigateTo('/')}
+      />
+    );
+  }
+
+  // View: Blog Listing / Archive
+  if (currentRoute.page === 'blog-archive') {
+    return (
+      <BlogArchivePage
+        onBackToHome={() => navigateTo('/')}
+        onOpenBlog={(blog) => {
+          const slug = getBlogSlug(blog);
+          navigateTo(`/blog/${slug}`);
         }}
       />
     );
   }
 
-  // If in Blog Archive Page view
-  if (viewMode === 'blogs') {
+  // View: Blog Article Detail
+  if (currentRoute.page === 'blog-article') {
+    const activeBlog = getBlogBySlug(currentRoute.slug);
     return (
-      <>
-        <BlogArchivePage
-          onBackToHome={() => {
-            window.location.hash = '#insights';
-          }}
-          onOpenBlog={(blog) => setSelectedBlog(blog)}
-        />
-        {selectedBlog && (
-          <BlogReaderModal
-            blog={selectedBlog}
-            onClose={() => setSelectedBlog(null)}
-          />
-        )}
-      </>
+      <BlogArticlePage
+        blog={activeBlog}
+        onNavigateBlog={(targetBlog) => {
+          const slug = getBlogSlug(targetBlog);
+          navigateTo(`/blog/${slug}`);
+        }}
+        onBackToBlogList={() => navigateTo('/blog')}
+        onBackToHome={() => navigateTo('/')}
+      />
     );
   }
 
-  // Standard Main Portfolio Landing Page
+  // View: Main Portfolio Landing Page
   return (
     <div className="app-root">
       {/* Ambient background atmosphere */}
@@ -154,8 +210,14 @@ function MainApp() {
         <SoftwareSolutionsSection />
         <ClientsPartnersSection />
         
-        {/* Blog Section (between Clients & Partners and The Opportunity) */}
-        <BlogSection onOpenBlog={(blog) => setSelectedBlog(blog)} />
+        {/* Blog Teaser Section */}
+        <BlogSection
+          onOpenBlog={(blog) => {
+            const slug = getBlogSlug(blog);
+            navigateTo(`/blog/${slug}`);
+          }}
+          onOpenArchive={() => navigateTo('/blog')}
+        />
 
         <OpportunitySection />
         <ContactSection onInquirySuccess={(data) => setSuccessData(data)} />
@@ -164,7 +226,7 @@ function MainApp() {
       {/* Footer */}
       <Footer />
 
-      {/* Modals */}
+      {/* Case Study Modal */}
       {selectedProject && (
         <CaseStudyModal
           project={selectedProject}
@@ -172,13 +234,7 @@ function MainApp() {
         />
       )}
 
-      {selectedBlog && (
-        <BlogReaderModal
-          blog={selectedBlog}
-          onClose={() => setSelectedBlog(null)}
-        />
-      )}
-
+      {/* Success Modal */}
       {successData && (
         <SuccessModal
           data={successData}

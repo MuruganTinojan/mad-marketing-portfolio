@@ -1,17 +1,42 @@
 import React from 'react';
 import { useData } from '../context/DataContext';
+import { getBlogSlug } from '../utils/slugify';
 
-export default function BlogSection({ onOpenBlog }) {
+const FALLBACK_THUMB = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop';
+
+export default function BlogSection({ onOpenBlog, onOpenArchive }) {
   const { blogs } = useData();
 
   // Get only the newest (latest) blog
   const newestBlog = blogs && blogs.length > 0 ? blogs[0] : null;
 
-  const handleOpenAllPublications = () => {
-    window.open('/#blogs', '_blank');
+  if (!newestBlog) return null;
+
+  const imageSrc = newestBlog.img || newestBlog.image || FALLBACK_THUMB;
+  const pubDate = newestBlog.publishDate || newestBlog.date || 'Recent';
+  const readTime = newestBlog.readTime || '4 min read';
+  const excerptText =
+    newestBlog.metaDescription ||
+    newestBlog.excerpt ||
+    newestBlog['content-1'] ||
+    "Discover how strategic engineering and audience resonance accelerate digital growth.";
+
+  const handleOpenBlog = () => {
+    if (onOpenBlog) {
+      onOpenBlog(newestBlog);
+    } else {
+      const slug = getBlogSlug(newestBlog);
+      window.location.pathname = `/blog/${slug}`;
+    }
   };
 
-  if (!newestBlog) return null;
+  const handleOpenArchive = () => {
+    if (onOpenArchive) {
+      onOpenArchive();
+    } else {
+      window.location.hash = '#blogs';
+    }
+  };
 
   return (
     <section id="insights" className="section insights-section">
@@ -22,9 +47,9 @@ export default function BlogSection({ onOpenBlog }) {
               <span className="pulse-dot-green"></span> PERSPECTIVES & INSIGHTS
             </span>
             <button
-              onClick={handleOpenAllPublications}
+              onClick={handleOpenArchive}
               className="view-all-blogs-link-btn"
-              aria-label="View all blog articles in new tab"
+              aria-label="View all blog articles"
             >
               <span>Explore All Articles</span>
               <span className="blogs-count-badge">{blogs.length}</span>
@@ -45,12 +70,24 @@ export default function BlogSection({ onOpenBlog }) {
         <div className="featured-blog-card">
           <div className="featured-blog-grid">
             {/* Left: Image Container */}
-            <div className="featured-blog-media-wrap" onClick={() => onOpenBlog(newestBlog)}>
+            <div
+              className="featured-blog-media-wrap"
+              onClick={handleOpenBlog}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') handleOpenBlog();
+              }}
+              aria-label={`Read ${newestBlog.title}`}
+            >
               <img
-                src={newestBlog.image}
+                src={imageSrc}
                 alt={newestBlog.title}
                 className="featured-blog-img"
                 loading="lazy"
+                onError={(e) => {
+                  e.target.src = FALLBACK_THUMB;
+                }}
               />
               <div className="featured-blog-img-overlay">
                 <span className="read-overlay-badge">
@@ -66,33 +103,42 @@ export default function BlogSection({ onOpenBlog }) {
                 <span className="blog-category-tag">{newestBlog.category}</span>
                 <span className="blog-meta-dot">&bull;</span>
                 <span className="blog-date">
-                  <i className="fa-regular fa-calendar"></i> {newestBlog.date}
+                  <i className="fa-regular fa-calendar"></i> {pubDate}
                 </span>
                 <span className="blog-meta-dot">&bull;</span>
                 <span className="blog-read-time">
-                  <i className="fa-regular fa-clock"></i> {newestBlog.readTime}
+                  <i className="fa-regular fa-clock"></i> {readTime}
                 </span>
               </div>
 
               <h3
                 className="featured-blog-title"
-                onClick={() => onOpenBlog(newestBlog)}
+                onClick={handleOpenBlog}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') handleOpenBlog();
+                }}
               >
                 {newestBlog.title}
               </h3>
 
-              <p className="featured-blog-excerpt">{newestBlog.excerpt}</p>
+              <p className="featured-blog-excerpt">
+                {typeof excerptText === 'string' && excerptText.length > 220
+                  ? excerptText.substring(0, 220) + '...'
+                  : excerptText}
+              </p>
 
               {/* Author & Capability Tags */}
               <div className="featured-blog-bottom-row">
                 <div className="featured-author-box">
                   <img
                     src="./assets/mad_logo.png"
-                    alt={newestBlog.author}
+                    alt="MAD Marketing"
                     className="featured-author-avatar"
                   />
                   <div className="featured-author-info">
-                    <span className="author-name">{newestBlog.author}</span>
+                    <span className="author-name">MAD Editorial Core</span>
                     <span className="author-label">Verified Contribution</span>
                   </div>
                 </div>
@@ -100,15 +146,16 @@ export default function BlogSection({ onOpenBlog }) {
                 <div className="featured-blog-cta-group">
                   <button
                     className="btn btn-secondary btn-read-article"
-                    onClick={() => onOpenBlog(newestBlog)}
+                    onClick={handleOpenBlog}
                   >
-                    Read Story <i className="fa-solid fa-arrow-up-right-from-square"></i>
+                    Read Story <i className="fa-solid fa-arrow-right"></i>
                   </button>
                   <button
                     className="btn btn-gradient btn-view-all"
-                    onClick={handleOpenAllPublications}
+                    onClick={handleOpenArchive}
                   >
-                    All Publications ({blogs.length}) <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: '12px' }}></i>
+                    All Publications ({blogs.length}){' '}
+                    <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: '12px' }}></i>
                   </button>
                 </div>
               </div>

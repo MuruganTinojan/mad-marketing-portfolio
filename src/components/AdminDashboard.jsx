@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
+import { showcaseGallery } from '../data/projectsData';
 
 export default function AdminDashboard({ onBackToSite }) {
   const {
@@ -10,13 +11,16 @@ export default function AdminDashboard({ onBackToSite }) {
     addBlog,
     updateBlog,
     deleteBlog,
+    moveBlog,
     addProject,
     updateProject,
     deleteProject,
+    moveProject,
     updatePortal,
     addPartner,
     updatePartner,
     deletePartner,
+    downloadBlogsJson,
     resetAllDefaults,
     exportAllJSON,
     importAllJSON
@@ -64,22 +68,38 @@ export default function AdminDashboard({ onBackToSite }) {
 
   // ---------------- Blog Editor State ----------------
   const [editingBlogId, setEditingBlogId] = useState(null);
+  const [imageMode, setImageMode] = useState('existing'); // 'existing' | 'upload'
+  const [uploadError, setUploadError] = useState('');
   const [blogForm, setBlogForm] = useState({
     title: '',
-    slug: '',
-    category: 'Enterprise Architecture',
-    readTime: '4 min read',
-    date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop',
-    author: 'MAD Editorial',
-    authorAvatar: './assets/mad_logo.png',
-    excerpt: '',
-    content: '',
-    tags: 'Architecture, Cloud'
+    category: 'Web', // Controlled category: 'Web' | 'SEO' | 'UX' | 'Marketing' | 'Design'
+    seoTitle: '',
+    metaDescription: '',
+    targetKeywords: '',
+    publishDate: new Date().toISOString().split('T')[0],
+    img: 'https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?q=80&w=1200&auto=format&fit=crop',
+    highlight: '',
+    content: ''
   });
+
+  const existingBlogImages = [
+    { label: 'Mobile Optimized UI', url: 'https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?q=80&w=1200&auto=format&fit=crop' },
+    { label: 'Web Design Trends', url: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1200&auto=format&fit=crop' },
+    { label: 'Local SEO Strategy', url: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?q=80&w=1200&auto=format&fit=crop' },
+    { label: 'E-Commerce UX Retail', url: 'https://images.unsplash.com/photo-1556742049-0a67c5574f73?q=80&w=1200&auto=format&fit=crop' },
+    { label: 'Organic Ads Research', url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop' },
+    { label: 'Lighthouse Performance', url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1200&auto=format&fit=crop' },
+    { label: 'Technical SEO Guide', url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop' },
+    { label: 'Micro-Interactions UX', url: 'https://images.unsplash.com/photo-1522542550221-31fd19575a2d?q=80&w=1200&auto=format&fit=crop' },
+    { label: 'Design Systems Tokens', url: 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?q=80&w=1200&auto=format&fit=crop' },
+    { label: 'CRM Architecture', url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop' },
+    { label: 'Enterprise Cloud Grid', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop' }
+  ];
 
   // ---------------- Project Editor State ----------------
   const [editingProjectId, setEditingProjectId] = useState(null);
+  const [projectImageMode, setProjectImageMode] = useState('gallery'); // 'gallery' | 'upload' | 'custom'
+  const [projectUploadError, setProjectUploadError] = useState('');
   const [projectForm, setProjectForm] = useState({
     title: '',
     domain: '',
@@ -88,12 +108,8 @@ export default function AdminDashboard({ onBackToSite }) {
     summary: '',
     fullStory: '',
     techTags: 'React, TypeScript, CSS3',
-    image: './UI/Rectangle 1.png',
+    image: './showcase/allindependentagencies.org.jpeg',
     browserUrl: '',
-    perf: 98,
-    a11y: 98,
-    bp: 100,
-    seo: 98,
     clientType: 'Enterprise',
     keyOutcome: 'High performance metrics achieved.'
   });
@@ -126,18 +142,45 @@ export default function AdminDashboard({ onBackToSite }) {
   const handleEditBlog = (blog) => {
     setEditingBlogId(blog.id);
     setBlogForm({
-      title: blog.title,
-      slug: blog.slug || blog.id,
-      category: blog.category || 'General',
-      readTime: blog.readTime || '4 min read',
-      date: blog.date || '',
-      image: blog.image || '',
-      author: blog.author || 'MAD Editorial',
-      authorAvatar: blog.authorAvatar || './assets/madlabs.png',
-      excerpt: blog.excerpt || '',
-      content: blog.content || '',
-      tags: Array.isArray(blog.tags) ? blog.tags.join(', ') : ''
+      title: blog.title || '',
+      category: ['Web', 'SEO', 'UX', 'Marketing', 'Design'].includes(blog.category) ? blog.category : 'Web',
+      seoTitle: blog.seoTitle || '',
+      metaDescription: blog.metaDescription || blog.excerpt || '',
+      targetKeywords: blog.targetKeywords || (Array.isArray(blog.tags) ? blog.tags.join(', ') : ''),
+      publishDate: blog.publishDate || blog.date || new Date().toISOString().split('T')[0],
+      img: blog.img || blog.image || 'https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?q=80&w=1200&auto=format&fit=crop',
+      highlight: blog.highlight || '',
+      content: blog.content || blog['content-1'] || ''
     });
+  };
+
+  const handleImageFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate type
+    const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml'];
+    if (!validTypes.includes(file.type)) {
+      setUploadError('Please select a valid image (PNG, JPG, WebP, SVG)');
+      return;
+    }
+
+    // Validate size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('Image size exceeds 5MB limit');
+      return;
+    }
+
+    setUploadError('');
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setBlogForm((prev) => ({
+        ...prev,
+        img: event.target.result
+      }));
+      showToast(`📸 Loaded "${file.name}"`);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSaveBlog = (e) => {
@@ -148,11 +191,16 @@ export default function AdminDashboard({ onBackToSite }) {
     }
 
     const payload = {
-      ...blogForm,
-      tags: blogForm.tags
-        .split(',')
-        .map((t) => t.trim())
-        .filter(Boolean)
+      title: blogForm.title.trim(),
+      category: blogForm.category,
+      seoTitle: blogForm.seoTitle || `${blogForm.title.trim()} | MAD Marketing`,
+      metaDescription: blogForm.metaDescription || blogForm.title.trim(),
+      targetKeywords: blogForm.targetKeywords || '',
+      publishDate: blogForm.publishDate || new Date().toISOString().split('T')[0],
+      img: blogForm.img,
+      image: blogForm.img,
+      highlight: blogForm.highlight,
+      content: blogForm.content
     };
 
     if (editingBlogId) {
@@ -167,22 +215,56 @@ export default function AdminDashboard({ onBackToSite }) {
     setEditingBlogId(null);
     setBlogForm({
       title: '',
-      slug: '',
-      category: 'Enterprise Architecture',
-      readTime: '4 min read',
-      date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-      image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop',
-      author: 'MAD Editorial',
-      authorAvatar: './assets/madlabs.png',
-      excerpt: '',
-      content: '',
-      tags: 'Architecture, Cloud'
+      category: 'Web',
+      seoTitle: '',
+      metaDescription: '',
+      targetKeywords: '',
+      publishDate: new Date().toISOString().split('T')[0],
+      img: 'https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?q=80&w=1200&auto=format&fit=crop',
+      highlight: '',
+      content: ''
     });
   };
 
   // ================= Project Handlers =================
+  const handleProjectImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml'];
+    if (!validTypes.includes(file.type)) {
+      setProjectUploadError('Please select a valid image (PNG, JPG, WebP, SVG)');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setProjectUploadError('Image size exceeds 5MB limit');
+      return;
+    }
+
+    setProjectUploadError('');
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setProjectForm((prev) => ({
+        ...prev,
+        image: event.target.result
+      }));
+      showToast(`📸 Loaded "${file.name}" for project`);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleEditProject = (proj) => {
     setEditingProjectId(proj.id);
+    const imgPath = proj.image || './showcase/allindependentagencies.org.jpeg';
+    if (imgPath.startsWith('data:')) {
+      setProjectImageMode('upload');
+    } else if (showcaseGallery.some((g) => g.file === imgPath)) {
+      setProjectImageMode('gallery');
+    } else {
+      setProjectImageMode('gallery');
+    }
+
     setProjectForm({
       title: proj.title,
       domain: proj.domain,
@@ -191,12 +273,8 @@ export default function AdminDashboard({ onBackToSite }) {
       summary: proj.summary,
       fullStory: proj.fullStory || proj.summary,
       techTags: Array.isArray(proj.techTags) ? proj.techTags.join(', ') : '',
-      image: proj.image || './UI/Rectangle 1.png',
+      image: imgPath,
       browserUrl: proj.domain ? `https://${proj.domain}` : '',
-      perf: proj.lighthouse ? proj.lighthouse.performance : 95,
-      a11y: proj.lighthouse ? proj.lighthouse.accessibility : 95,
-      bp: proj.lighthouse ? proj.lighthouse.bestPractices : 95,
-      seo: proj.lighthouse ? proj.lighthouse.seo : 95,
       clientType: proj.clientType || 'Corporate',
       keyOutcome: proj.keyOutcome || ''
     });
@@ -220,15 +298,9 @@ export default function AdminDashboard({ onBackToSite }) {
         .split(',')
         .map((t) => t.trim())
         .filter(Boolean),
-      image: projectForm.image,
+      image: projectForm.image || './showcase/allindependentagencies.org.jpeg',
       clientType: projectForm.clientType,
-      keyOutcome: projectForm.keyOutcome,
-      lighthouse: {
-        performance: Number(projectForm.perf) || 95,
-        accessibility: Number(projectForm.a11y) || 95,
-        bestPractices: Number(projectForm.bp) || 95,
-        seo: Number(projectForm.seo) || 95
-      }
+      keyOutcome: projectForm.keyOutcome
     };
 
     if (editingProjectId) {
@@ -248,12 +320,8 @@ export default function AdminDashboard({ onBackToSite }) {
       summary: '',
       fullStory: '',
       techTags: 'React, TypeScript, CSS3',
-      image: './UI/Rectangle 1.png',
+      image: './showcase/allindependentagencies.org.jpeg',
       browserUrl: '',
-      perf: 98,
-      a11y: 98,
-      bp: 100,
-      seo: 98,
       clientType: 'Enterprise',
       keyOutcome: ''
     });
@@ -361,7 +429,15 @@ export default function AdminDashboard({ onBackToSite }) {
             </h1>
           </div>
 
-          <div className="admin-actions-col" style={{ display: 'flex', gap: '10px' }}>
+          <div className="admin-actions-col" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <button
+              className="btn btn-secondary"
+              onClick={exportAllJSON}
+              title="Download all site data as a JSON file backup"
+              style={{ borderColor: 'rgba(0, 230, 153, 0.4)', color: 'var(--color-primary-green)' }}
+            >
+              <i className="fa-solid fa-download"></i> Export Data (JSON)
+            </button>
             <button className="btn btn-secondary" onClick={onBackToSite}>
               <i className="fa-solid fa-globe"></i> View Live Site
             </button>
@@ -454,7 +530,7 @@ export default function AdminDashboard({ onBackToSite }) {
                     <input
                       type="text"
                       className="admin-input"
-                      placeholder="e.g. The Architecture of GCC Modernization"
+                      placeholder="e.g. Why Your Sri Lankan Business Needs a Mobile-Optimized Website"
                       value={blogForm.title}
                       onChange={(e) => setBlogForm({ ...blogForm, title: e.target.value })}
                       required
@@ -463,96 +539,198 @@ export default function AdminDashboard({ onBackToSite }) {
 
                   <div className="admin-grid-2">
                     <div className="admin-field-group">
-                      <label>Category</label>
-                      <input
-                        type="text"
+                      <label>Category * (Controlled Selection)</label>
+                      <select
                         className="admin-input"
-                        placeholder="Enterprise Architecture / Marketing Strategy"
                         value={blogForm.category}
                         onChange={(e) => setBlogForm({ ...blogForm, category: e.target.value })}
-                      />
+                        required
+                      >
+                        <option value="Web">Web</option>
+                        <option value="SEO">SEO</option>
+                        <option value="UX">UX</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Design">Design</option>
+                      </select>
                     </div>
-                    <div className="admin-field-group">
-                      <label>Reading Time</label>
-                      <input
-                        type="text"
-                        className="admin-input"
-                        placeholder="e.g. 5 min read"
-                        value={blogForm.readTime}
-                        onChange={(e) => setBlogForm({ ...blogForm, readTime: e.target.value })}
-                      />
-                    </div>
-                  </div>
 
-                  <div className="admin-grid-2">
                     <div className="admin-field-group">
                       <label>Publish Date</label>
                       <input
-                        type="text"
+                        type="date"
                         className="admin-input"
-                        value={blogForm.date}
-                        onChange={(e) => setBlogForm({ ...blogForm, date: e.target.value })}
-                      />
-                    </div>
-                    <div className="admin-field-group">
-                      <label>Author</label>
-                      <input
-                        type="text"
-                        className="admin-input"
-                        value={blogForm.author}
-                        onChange={(e) => setBlogForm({ ...blogForm, author: e.target.value })}
+                        value={blogForm.publishDate}
+                        onChange={(e) => setBlogForm({ ...blogForm, publishDate: e.target.value })}
                       />
                     </div>
                   </div>
 
+                  {/* Featured Image Management (Option A: Upload New | Option B: Choose Existing) */}
                   <div className="admin-field-group">
-                    <label>Cover Image URL *</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <label style={{ margin: 0 }}>Featured Image *</label>
+                      <div className="image-mode-toggle" style={{ display: 'inline-flex', gap: '6px' }}>
+                        <button
+                          type="button"
+                          className={`btn-action-pill ${imageMode === 'existing' ? 'active' : ''}`}
+                          style={{
+                            padding: '3px 10px',
+                            fontSize: '11px',
+                            borderRadius: '4px',
+                            background: imageMode === 'existing' ? 'var(--color-primary-green)' : 'rgba(255,255,255,0.08)',
+                            color: imageMode === 'existing' ? '#000' : '#fff',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontWeight: 600
+                          }}
+                          onClick={() => setImageMode('existing')}
+                        >
+                          <i className="fa-solid fa-images"></i> Choose Existing
+                        </button>
+                        <button
+                          type="button"
+                          className={`btn-action-pill ${imageMode === 'upload' ? 'active' : ''}`}
+                          style={{
+                            padding: '3px 10px',
+                            fontSize: '11px',
+                            borderRadius: '4px',
+                            background: imageMode === 'upload' ? 'var(--color-primary-green)' : 'rgba(255,255,255,0.08)',
+                            color: imageMode === 'upload' ? '#000' : '#fff',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontWeight: 600
+                          }}
+                          onClick={() => setImageMode('upload')}
+                        >
+                          <i className="fa-solid fa-upload"></i> Upload New
+                        </button>
+                      </div>
+                    </div>
+
+                    {imageMode === 'existing' ? (
+                      <div className="admin-existing-images-picker">
+                        <select
+                          className="admin-input"
+                          value={blogForm.img}
+                          onChange={(e) => setBlogForm({ ...blogForm, img: e.target.value })}
+                          style={{ marginBottom: '8px' }}
+                        >
+                          {existingBlogImages.map((imgItem) => (
+                            <option key={imgItem.url} value={imgItem.url}>
+                              {imgItem.label} ({imgItem.url.startsWith('http') ? 'External' : 'Local'})
+                            </option>
+                          ))}
+                        </select>
+                        <input
+                          type="text"
+                          className="admin-input"
+                          placeholder="Or enter custom image URL or /blog/... path"
+                          value={blogForm.img}
+                          onChange={(e) => setBlogForm({ ...blogForm, img: e.target.value })}
+                        />
+                      </div>
+                    ) : (
+                      <div className="admin-upload-box">
+                        <input
+                          type="file"
+                          accept="image/png, image/jpeg, image/webp, image/svg+xml"
+                          className="admin-input"
+                          onChange={handleImageFileUpload}
+                        />
+                        {uploadError && (
+                          <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                            {uploadError}
+                          </p>
+                        )}
+                        <p style={{ color: 'var(--text-muted)', fontSize: '11px', marginTop: '4px' }}>
+                          Accepted formats: PNG, JPG, WebP, SVG. Max file size: 5MB.
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Image Preview Box with error fallback */}
+                    <div
+                      className="admin-img-preview-box"
+                      style={{
+                        marginTop: '10px',
+                        background: '#080611',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '8px',
+                        padding: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px'
+                      }}
+                    >
+                      <img
+                        src={blogForm.img}
+                        alt="Preview"
+                        style={{ width: '90px', height: '60px', objectFit: 'cover', borderRadius: '4px' }}
+                        onError={(e) => {
+                          e.target.src = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop';
+                        }}
+                      />
+                      <div style={{ fontSize: '12px', color: 'var(--text-muted)', overflow: 'hidden' }}>
+                        <span style={{ color: '#fff', fontWeight: 600, display: 'block' }}>Live Preview</span>
+                        <span style={{ fontSize: '11px', wordBreak: 'break-all' }}>{blogForm.img?.substring(0, 50)}...</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* SEO Fields */}
+                  <div className="admin-field-group">
+                    <label>SEO Document Title</label>
                     <input
                       type="text"
                       className="admin-input"
-                      placeholder="https://images.unsplash.com/... or /UI/..."
-                      value={blogForm.image}
-                      onChange={(e) => setBlogForm({ ...blogForm, image: e.target.value })}
-                      required
+                      placeholder="e.g. Mobile-Optimized Websites in 2025 | MAD Marketing"
+                      value={blogForm.seoTitle}
+                      onChange={(e) => setBlogForm({ ...blogForm, seoTitle: e.target.value })}
                     />
-                    {blogForm.image && (
-                      <div className="admin-img-preview-box">
-                        <img src={blogForm.image} alt="Preview" onError={(e) => (e.target.style.display = 'none')} />
-                      </div>
-                    )}
                   </div>
 
                   <div className="admin-field-group">
-                    <label>Short Excerpt (Showcase summary)</label>
+                    <label>Meta Description (SEO & Social Previews)</label>
                     <textarea
                       rows="2"
                       className="admin-textarea"
-                      placeholder="Concise 1-2 sentence hook..."
-                      value={blogForm.excerpt}
-                      onChange={(e) => setBlogForm({ ...blogForm, excerpt: e.target.value })}
+                      placeholder="Compelling 150-160 character description for search engines..."
+                      value={blogForm.metaDescription}
+                      onChange={(e) => setBlogForm({ ...blogForm, metaDescription: e.target.value })}
                     ></textarea>
                   </div>
 
                   <div className="admin-field-group">
-                    <label>Full Content (Markdown supported)</label>
-                    <textarea
-                      rows="7"
-                      className="admin-textarea code-font"
-                      placeholder="Use ### for headers, - for bullets, and blank lines between paragraphs..."
-                      value={blogForm.content}
-                      onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
-                    ></textarea>
-                  </div>
-
-                  <div className="admin-field-group">
-                    <label>Keywords & Tags (comma-separated)</label>
+                    <label>Target Keywords (comma-separated)</label>
                     <input
                       type="text"
                       className="admin-input"
-                      placeholder="GCC, Architecture, Performance"
-                      value={blogForm.tags}
-                      onChange={(e) => setBlogForm({ ...blogForm, tags: e.target.value })}
+                      placeholder="mobile SEO, Sri Lanka web development, Colombo"
+                      value={blogForm.targetKeywords}
+                      onChange={(e) => setBlogForm({ ...blogForm, targetKeywords: e.target.value })}
                     />
+                  </div>
+
+                  <div className="admin-field-group">
+                    <label>Final Article Highlight / CTA Copy</label>
+                    <textarea
+                      rows="2"
+                      className="admin-textarea"
+                      placeholder="Ready to future-proof your business with MAD Marketing?..."
+                      value={blogForm.highlight}
+                      onChange={(e) => setBlogForm({ ...blogForm, highlight: e.target.value })}
+                    ></textarea>
+                  </div>
+
+                  <div className="admin-field-group">
+                    <label>Article Body Content (Markdown supported)</label>
+                    <textarea
+                      rows="7"
+                      className="admin-textarea code-font"
+                      placeholder="Use ### for subheadings, - for bullets, and blank lines between paragraphs..."
+                      value={blogForm.content}
+                      onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
+                    ></textarea>
                   </div>
 
                   <button type="submit" className="btn btn-gradient" style={{ width: '100%' }}>
@@ -563,28 +741,68 @@ export default function AdminDashboard({ onBackToSite }) {
 
               {/* Right Pane: Live Blogs List */}
               <div className="admin-pane-card">
-                <div className="pane-card-header">
+                <div className="pane-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                   <h3>
                     <i className="fa-solid fa-list-check"></i> Published Articles ({blogs.length})
                   </h3>
-                  <span className="admin-hint-pill">Top item is featured on homepage</span>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    style={{ fontSize: '12px', padding: '6px 12px' }}
+                    onClick={downloadBlogsJson}
+                    title="Export blogsData.json directly"
+                  >
+                    <i className="fa-solid fa-download"></i> Save blogsData.json
+                  </button>
                 </div>
 
                 <div className="admin-items-list">
                   {blogs.map((b, idx) => (
-                    <div key={b.id} className="admin-list-item-card">
-                      <img src={b.image} alt={b.title} className="admin-item-thumb" />
+                    <div key={b.id || idx} className="admin-list-item-card">
+                      <img
+                        src={b.img || b.image || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop'}
+                        alt={b.title}
+                        className="admin-item-thumb"
+                        onError={(e) => {
+                          e.target.src = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop';
+                        }}
+                      />
                       <div className="admin-item-info">
                         <div className="admin-item-badges">
-                          {idx === 0 && <span className="admin-tag-live">NEWEST (HOMEPAGE)</span>}
+                          {idx === 0 ? (
+                            <span className="admin-tag-live">#1 NEWEST (HOMEPAGE)</span>
+                          ) : (
+                            <span className="admin-tag-order">#{idx + 1}</span>
+                          )}
                           <span className="admin-tag-category">{b.category}</span>
-                          <span className="admin-tag-date">{b.date}</span>
+                          <span className="admin-tag-date">{b.publishDate || b.date}</span>
                         </div>
                         <h4 className="admin-item-title">{b.title}</h4>
-                        <p className="admin-item-snippet">{b.excerpt}</p>
+                        <p className="admin-item-snippet">{b.metaDescription || b.excerpt || b['content-1'] || ''}</p>
                       </div>
                       <div className="admin-item-actions">
+                        <div className="reorder-btn-group">
+                          <button
+                            type="button"
+                            className="admin-btn-action small reorder"
+                            disabled={idx === 0}
+                            onClick={() => moveBlog(idx, idx - 1)}
+                            title="Move article up (Prioritize on homepage)"
+                          >
+                            <i className="fa-solid fa-chevron-up"></i>
+                          </button>
+                          <button
+                            type="button"
+                            className="admin-btn-action small reorder"
+                            disabled={idx === blogs.length - 1}
+                            onClick={() => moveBlog(idx, idx + 1)}
+                            title="Move article down"
+                          >
+                            <i className="fa-solid fa-chevron-down"></i>
+                          </button>
+                        </div>
                         <button
+                          type="button"
                           className="admin-btn-action edit"
                           onClick={() => handleEditBlog(b)}
                           title="Edit Article"
@@ -592,6 +810,7 @@ export default function AdminDashboard({ onBackToSite }) {
                           <i className="fa-solid fa-pencil"></i>
                         </button>
                         <button
+                          type="button"
                           className="admin-btn-action delete"
                           onClick={() => {
                             if (window.confirm(`Delete article: "${b.title}"?`)) {
@@ -638,12 +857,8 @@ export default function AdminDashboard({ onBackToSite }) {
                           summary: '',
                           fullStory: '',
                           techTags: 'React, TypeScript, CSS3',
-                          image: './UI/Rectangle 1.png',
+                          image: './showcase/allindependentagencies.org.jpeg',
                           browserUrl: '',
-                          perf: 98,
-                          a11y: 98,
-                          bp: 100,
-                          seo: 98,
                           clientType: 'Enterprise',
                           keyOutcome: ''
                         });
@@ -716,20 +931,187 @@ export default function AdminDashboard({ onBackToSite }) {
                     </div>
                   </div>
 
+                  {/* Project Screenshot / Mockup Image Management */}
                   <div className="admin-field-group">
-                    <label>Browser Mockup Image Path or URL</label>
-                    <input
-                      type="text"
-                      className="admin-input"
-                      placeholder="/UI/Frame 34.png or https://..."
-                      value={projectForm.image}
-                      onChange={(e) => setProjectForm({ ...projectForm, image: e.target.value })}
-                    />
-                    {projectForm.image && (
-                      <div className="admin-img-preview-box">
-                        <img src={projectForm.image} alt="Mockup Preview" />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '6px' }}>
+                      <label style={{ margin: 0 }}>Showcase Screenshot Image *</label>
+                      <div className="image-mode-toggle" style={{ display: 'inline-flex', gap: '6px' }}>
+                        <button
+                          type="button"
+                          className={`btn-action-pill ${projectImageMode === 'gallery' ? 'active' : ''}`}
+                          style={{
+                            padding: '3px 10px',
+                            fontSize: '11px',
+                            borderRadius: '4px',
+                            background: projectImageMode === 'gallery' ? 'var(--color-primary-green)' : 'rgba(255,255,255,0.08)',
+                            color: projectImageMode === 'gallery' ? '#000' : '#fff',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontWeight: 600
+                          }}
+                          onClick={() => setProjectImageMode('gallery')}
+                        >
+                          <i className="fa-solid fa-folder-open"></i> Choose Image
+                        </button>
+                        <button
+                          type="button"
+                          className={`btn-action-pill ${projectImageMode === 'upload' ? 'active' : ''}`}
+                          style={{
+                            padding: '3px 10px',
+                            fontSize: '11px',
+                            borderRadius: '4px',
+                            background: projectImageMode === 'upload' ? 'var(--color-primary-green)' : 'rgba(255,255,255,0.08)',
+                            color: projectImageMode === 'upload' ? '#000' : '#fff',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontWeight: 600
+                          }}
+                          onClick={() => setProjectImageMode('upload')}
+                        >
+                          <i className="fa-solid fa-upload"></i> Upload File
+                        </button>
+                        <button
+                          type="button"
+                          className={`btn-action-pill ${projectImageMode === 'custom' ? 'active' : ''}`}
+                          style={{
+                            padding: '3px 10px',
+                            fontSize: '11px',
+                            borderRadius: '4px',
+                            background: projectImageMode === 'custom' ? 'var(--color-primary-green)' : 'rgba(255,255,255,0.08)',
+                            color: projectImageMode === 'custom' ? '#000' : '#fff',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontWeight: 600
+                          }}
+                          onClick={() => setProjectImageMode('custom')}
+                        >
+                          <i className="fa-solid fa-link"></i> Custom URL
+                        </button>
+                      </div>
+                    </div>
+
+                    {projectImageMode === 'gallery' && (
+                      <div className="admin-existing-images-picker">
+                        <select
+                          className="admin-input"
+                          value={projectForm.image}
+                          onChange={(e) => setProjectForm({ ...projectForm, image: e.target.value })}
+                          style={{ marginBottom: '8px' }}
+                        >
+                          {showcaseGallery.map((item) => (
+                            <option key={item.file} value={item.file}>
+                              {item.label}
+                            </option>
+                          ))}
+                        </select>
+
+                        {/* Quick visual thumbnails grid */}
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(75px, 1fr))',
+                            gap: '8px',
+                            maxHeight: '130px',
+                            overflowY: 'auto',
+                            padding: '8px',
+                            background: 'rgba(255,255,255,0.03)',
+                            borderRadius: '8px',
+                            border: '1px solid rgba(255,255,255,0.08)'
+                          }}
+                        >
+                          {showcaseGallery.map((item) => {
+                            const isSelected = projectForm.image === item.file;
+                            return (
+                              <div
+                                key={item.file}
+                                onClick={() => setProjectForm({ ...projectForm, image: item.file })}
+                                title={item.label}
+                                style={{
+                                  cursor: 'pointer',
+                                  borderRadius: '6px',
+                                  overflow: 'hidden',
+                                  border: isSelected ? '2px solid var(--color-primary-green)' : '1px solid rgba(255,255,255,0.1)',
+                                  background: '#0a0815',
+                                  transition: 'all 0.2s ease',
+                                  height: '52px'
+                                }}
+                              >
+                                <img
+                                  src={item.file}
+                                  alt={item.label}
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                  onError={(e) => {
+                                    e.target.style.display = 'none';
+                                  }}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     )}
+
+                    {projectImageMode === 'upload' && (
+                      <div className="admin-upload-box">
+                        <input
+                          type="file"
+                          accept="image/png, image/jpeg, image/webp, image/svg+xml"
+                          className="admin-input"
+                          onChange={handleProjectImageUpload}
+                        />
+                        {projectUploadError && (
+                          <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                            {projectUploadError}
+                          </p>
+                        )}
+                        <p style={{ color: 'var(--text-muted)', fontSize: '11px', marginTop: '4px' }}>
+                          Select an image from your computer (PNG, JPG, WebP, SVG, max 5MB). It is saved directly to your site and lives immediately!
+                        </p>
+                      </div>
+                    )}
+
+                    {projectImageMode === 'custom' && (
+                      <div>
+                        <input
+                          type="text"
+                          className="admin-input"
+                          placeholder="/showcase/filename.jpeg or https://..."
+                          value={projectForm.image}
+                          onChange={(e) => setProjectForm({ ...projectForm, image: e.target.value })}
+                        />
+                      </div>
+                    )}
+
+                    {/* Mockup Preview Card */}
+                    <div
+                      style={{
+                        marginTop: '10px',
+                        background: '#080611',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '8px',
+                        padding: '10px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '14px'
+                      }}
+                    >
+                      <img
+                        src={projectForm.image}
+                        alt="Project Mockup Preview"
+                        style={{ width: '110px', height: '65px', objectFit: 'cover', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)' }}
+                        onError={(e) => {
+                          e.target.src = './showcase/allindependentagencies.org.jpeg';
+                        }}
+                      />
+                      <div style={{ fontSize: '12px', color: 'var(--text-muted)', overflow: 'hidden' }}>
+                        <span style={{ color: '#fff', fontWeight: 600, display: 'block', marginBottom: '2px' }}>
+                          <i className="fa-solid fa-eye"></i> Live Showcase Preview
+                        </span>
+                        <span style={{ fontSize: '11px', wordBreak: 'break-all', display: 'block' }}>
+                          {projectForm.image.startsWith('data:') ? 'Custom Uploaded Data (Base64)' : projectForm.image}
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="admin-field-group">
@@ -763,67 +1145,6 @@ export default function AdminDashboard({ onBackToSite }) {
                       value={projectForm.techTags}
                       onChange={(e) => setProjectForm({ ...projectForm, techTags: e.target.value })}
                     />
-                  </div>
-
-                  {/* Lighthouse Analyzer Sliders */}
-                  <div className="admin-analyzer-box">
-                    <label className="analyzer-box-header">
-                      <i className="fa-solid fa-gauge-high"></i> Google Lighthouse Analyzer Box Scores
-                    </label>
-                    <div className="analyzer-sliders-grid">
-                      <div className="slider-item">
-                        <div className="slider-label-row">
-                          <span>Performance</span>
-                          <strong>{projectForm.perf}</strong>
-                        </div>
-                        <input
-                          type="range"
-                          min="50"
-                          max="100"
-                          value={projectForm.perf}
-                          onChange={(e) => setProjectForm({ ...projectForm, perf: e.target.value })}
-                        />
-                      </div>
-                      <div className="slider-item">
-                        <div className="slider-label-row">
-                          <span>Accessibility</span>
-                          <strong>{projectForm.a11y}</strong>
-                        </div>
-                        <input
-                          type="range"
-                          min="50"
-                          max="100"
-                          value={projectForm.a11y}
-                          onChange={(e) => setProjectForm({ ...projectForm, a11y: e.target.value })}
-                        />
-                      </div>
-                      <div className="slider-item">
-                        <div className="slider-label-row">
-                          <span>Best Practices</span>
-                          <strong>{projectForm.bp}</strong>
-                        </div>
-                        <input
-                          type="range"
-                          min="50"
-                          max="100"
-                          value={projectForm.bp}
-                          onChange={(e) => setProjectForm({ ...projectForm, bp: e.target.value })}
-                        />
-                      </div>
-                      <div className="slider-item">
-                        <div className="slider-label-row">
-                          <span>SEO</span>
-                          <strong>{projectForm.seo}</strong>
-                        </div>
-                        <input
-                          type="range"
-                          min="50"
-                          max="100"
-                          value={projectForm.seo}
-                          onChange={(e) => setProjectForm({ ...projectForm, seo: e.target.value })}
-                        />
-                      </div>
-                    </div>
                   </div>
 
                   <div className="admin-grid-2">
@@ -861,26 +1182,48 @@ export default function AdminDashboard({ onBackToSite }) {
                   <h3>
                     <i className="fa-solid fa-layer-group"></i> Active Projects ({projects.length})
                   </h3>
+                  <span className="admin-hint-pill">Top project (#1) is featured on homepage load</span>
                 </div>
 
                 <div className="admin-items-list">
-                  {projects.map((proj) => (
+                  {projects.map((proj, idx) => (
                     <div key={proj.id} className="admin-list-item-card">
                       <img src={proj.image} alt={proj.title} className="admin-item-thumb" />
                       <div className="admin-item-info">
                         <div className="admin-item-badges">
+                          {idx === 0 ? (
+                            <span className="admin-tag-live">#1 (FEATURED IN SHOWCASE)</span>
+                          ) : (
+                            <span className="admin-tag-order">#{idx + 1}</span>
+                          )}
                           <span className="admin-tag-category">{proj.regionLabel}</span>
                           <span className="admin-tag-domain">{proj.domain}</span>
                         </div>
                         <h4 className="admin-item-title">{proj.title}</h4>
-                        <div className="admin-lighthouse-mini-scores">
-                          <span>Perf: {proj.lighthouse?.performance || 95}</span> &bull;
-                          <span>A11y: {proj.lighthouse?.accessibility || 95}</span> &bull;
-                          <span>SEO: {proj.lighthouse?.seo || 95}</span>
-                        </div>
                       </div>
                       <div className="admin-item-actions">
+                        <div className="reorder-btn-group">
+                          <button
+                            type="button"
+                            className="admin-btn-action small reorder"
+                            disabled={idx === 0}
+                            onClick={() => moveProject(idx, idx - 1)}
+                            title="Move project up (Show earlier / Featured)"
+                          >
+                            <i className="fa-solid fa-chevron-up"></i>
+                          </button>
+                          <button
+                            type="button"
+                            className="admin-btn-action small reorder"
+                            disabled={idx === projects.length - 1}
+                            onClick={() => moveProject(idx, idx + 1)}
+                            title="Move project down"
+                          >
+                            <i className="fa-solid fa-chevron-down"></i>
+                          </button>
+                        </div>
                         <button
+                          type="button"
                           className="admin-btn-action edit"
                           onClick={() => handleEditProject(proj)}
                           title="Edit Project"
@@ -888,6 +1231,7 @@ export default function AdminDashboard({ onBackToSite }) {
                           <i className="fa-solid fa-pencil"></i>
                         </button>
                         <button
+                          type="button"
                           className="admin-btn-action delete"
                           onClick={() => {
                             if (window.confirm(`Delete project "${proj.title}"?`)) {

@@ -13,13 +13,41 @@ export default function Footer() {
     { label: 'Contact', href: '#contact' }
   ];
 
+  const handleLinkClick = (event, href) => {
+    event.preventDefault();
+
+    const targetId = href.replace('#', '');
+    const targetElement = document.getElementById(targetId);
+
+    if (!targetElement) {
+      return;
+    }
+
+    // Update the URL hash without triggering the browser's default jump
+    window.history.pushState(null, '', href);
+
+    // Smooth scroll directly to the section
+    targetElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  };
+
   return (
     <footer className="footer-bar">
       <div className="footer-inner">
-        <p className="footer-copy">&copy; 2026 MAD Marketing. All rights reserved.</p>
+        <p className="footer-copy">
+          &copy; 2026 MAD Marketing. All rights reserved.
+        </p>
+
         <nav className="footer-nav" aria-label="Footer Navigation">
           {footerLinks.map((link) => (
-            <a key={link.label} href={link.href} className="footer-link">
+            <a
+              key={link.label}
+              href={link.href}
+              className="footer-link"
+              onClick={(event) => handleLinkClick(event, link.href)}
+            >
               {link.label}
             </a>
           ))}

@@ -15,36 +15,6 @@ export default function CaseStudyModal({ project, onClose }) {
 
   if (!project) return null;
 
-  const renderLighthouseMeter = (score, label) => {
-    const radius = 20;
-    const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (score / 100) * circumference;
-    const strokeColor = score >= 90 ? '#10B981' : score >= 50 ? '#F59E0B' : '#EF4444';
-
-    return (
-      <div className="gauge-item" key={label}>
-        <div className="gauge-svg-wrap" style={{ width: '48px', height: '48px' }}>
-          <svg className="gauge-svg" viewBox="0 0 52 52">
-            <circle className="gauge-bg-circle" cx="26" cy="26" r={radius} />
-            <circle
-              className="gauge-meter-circle"
-              cx="26"
-              cy="26"
-              r={radius}
-              style={{
-                strokeDasharray: circumference,
-                strokeDashoffset: offset,
-                stroke: strokeColor
-              }}
-            />
-          </svg>
-          <span className="gauge-pct-text" style={{ fontSize: '11px' }}>{score}%</span>
-        </div>
-        <span className="gauge-category-pill" style={{ fontSize: '11px' }}>{label}</span>
-      </div>
-    );
-  };
-
   return (
     <div
       className="modal-overlay active"
@@ -83,7 +53,14 @@ export default function CaseStudyModal({ project, onClose }) {
 
           {/* Full High-Res Preview (Single Natural Scroll) */}
           <div style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid rgba(248, 250, 252, 0.1)', background: '#06050A', marginBottom: '28px' }}>
-            <img src={project.image} alt={project.title} style={{ width: '100%', height: 'auto', display: 'block' }} />
+            <img
+              src={project.image}
+              alt={project.title}
+              style={{ width: '100%', height: 'auto', display: 'block' }}
+              onError={(e) => {
+                e.target.src = './showcase/allindependentagencies.org.jpeg';
+              }}
+            />
           </div>
 
           {/* Details & Metrics */}
@@ -117,16 +94,6 @@ export default function CaseStudyModal({ project, onClose }) {
                     {tag}
                   </span>
                 ))}
-              </div>
-
-              <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '16px', color: 'var(--text-primary)', marginBottom: '14px' }}>
-                Google Lighthouse Audit
-              </h4>
-              <div className="lighthouse-analyzer-box" style={{ padding: '12px', background: 'rgba(6, 5, 10, 0.5)' }}>
-                {renderLighthouseMeter(project.lighthouse.performance, 'Perf')}
-                {renderLighthouseMeter(project.lighthouse.accessibility, 'A11y')}
-                {renderLighthouseMeter(project.lighthouse.bestPractices, 'Best')}
-                {renderLighthouseMeter(project.lighthouse.seo, 'SEO')}
               </div>
             </div>
           </div>

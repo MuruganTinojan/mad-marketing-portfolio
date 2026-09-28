@@ -1,7 +1,9 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { projectsData } from '../data/projectsData';
+import { useData } from '../context/DataContext';
 
 export default function WebDigitalSection({ onOpenCaseStudy }) {
+  const { projects } = useData();
+  const allProjects = projects && projects.length > 0 ? projects : [];
   const [currentFilter, setCurrentFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
@@ -16,7 +18,7 @@ export default function WebDigitalSection({ onOpenCaseStudy }) {
 
   // Filter projects by region and search query
   const filteredProjects = useMemo(() => {
-    return projectsData.filter((p) => {
+    return allProjects.filter((p) => {
       const matchesFilter = currentFilter === 'all' || p.region === currentFilter;
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch =
@@ -24,10 +26,10 @@ export default function WebDigitalSection({ onOpenCaseStudy }) {
         p.title.toLowerCase().includes(q) ||
         p.domain.toLowerCase().includes(q) ||
         p.regionLabel.toLowerCase().includes(q) ||
-        p.techTags.some((tag) => tag.toLowerCase().includes(q));
+        (p.techTags && p.techTags.some((tag) => tag.toLowerCase().includes(q)));
       return matchesFilter && matchesSearch;
     });
-  }, [currentFilter, searchQuery]);
+  }, [allProjects, currentFilter, searchQuery]);
 
   const changeSlide = (newIndex) => {
     if (newIndex === activeIndex || filteredProjects.length === 0) return;
@@ -88,36 +90,6 @@ export default function WebDigitalSection({ onOpenCaseStudy }) {
   };
 
   const activeProject = filteredProjects[activeIndex] || filteredProjects[0];
-
-  const renderLighthouseMeter = (score, label) => {
-    const radius = 22;
-    const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (score / 100) * circumference;
-    const strokeColor = score >= 90 ? '#10B981' : score >= 50 ? '#F59E0B' : '#EF4444';
-
-    return (
-      <div className="gauge-item" key={label}>
-        <div className="gauge-svg-wrap">
-          <svg className="gauge-svg" viewBox="0 0 52 52">
-            <circle className="gauge-bg-circle" cx="26" cy="26" r={radius} />
-            <circle
-              className="gauge-meter-circle"
-              cx="26"
-              cy="26"
-              r={radius}
-              style={{
-                strokeDasharray: circumference,
-                strokeDashoffset: offset,
-                stroke: strokeColor
-              }}
-            />
-          </svg>
-          <span className="gauge-pct-text">{score}%</span>
-        </div>
-        <span className="gauge-category-pill">{label}</span>
-      </div>
-    );
-  };
 
   return (
     <section id="web-digital" className="section web-digital-section">
@@ -214,13 +186,6 @@ export default function WebDigitalSection({ onOpenCaseStudy }) {
               >
                 Explore Case Study <i className="fa-solid fa-arrow-right-long"></i>
               </button>
-
-              <div className="lighthouse-analyzer-box">
-                {renderLighthouseMeter(activeProject.lighthouse.performance, 'Performance')}
-                {renderLighthouseMeter(activeProject.lighthouse.accessibility, 'Accessibility')}
-                {renderLighthouseMeter(activeProject.lighthouse.bestPractices, 'Best Practices')}
-                {renderLighthouseMeter(activeProject.lighthouse.seo, 'SEO')}
-              </div>
             </div>
 
             <div className="showcase-right-frame">
@@ -244,6 +209,9 @@ export default function WebDigitalSection({ onOpenCaseStudy }) {
                   alt={`${activeProject.title} Live Preview`}
                   className="browser-mockup-img"
                   loading="lazy"
+                  onError={(e) => {
+                    e.target.src = './showcase/allindependentagencies.org.jpeg';
+                  }}
                 />
               </div>
             </div>
@@ -309,7 +277,14 @@ export default function WebDigitalSection({ onOpenCaseStudy }) {
                     onClick={() => onOpenCaseStudy(p)}
                     title="Click to view full case study"
                   >
-                    <img src={p.image} alt={p.title} loading="lazy" />
+                    <img
+                      src={p.image}
+                      alt={p.title}
+                      loading="lazy"
+                      onError={(e) => {
+                        e.target.src = './showcase/allindependentagencies.org.jpeg';
+                      }}
+                    />
                   </div>
                   <h4 className="showcase-title" style={{ fontSize: '18px', marginBottom: '8px' }}>
                     {p.title}

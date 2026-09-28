@@ -2,11 +2,12 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { projectsData as initialProjects, clientLogos as initialPartners } from '../data/projectsData';
 import { defaultBlogs } from '../data/blogsData';
 import { defaultPortalData } from '../data/defaultPortalData';
+import { getBlogSlug, findBlogBySlug as findSlugMatch } from '../utils/slugify';
 
 const DataContext = createContext(null);
 
 const STORAGE_KEYS = {
-  BLOGS: 'mad_blogs_v2',
+  BLOGS: 'mad_blogs_v3',
   PROJECTS: 'mad_projects_v2',
   PORTAL: 'mad_portal_v2',
   PARTNERS: 'mad_partners_v2'
@@ -35,12 +36,32 @@ function sanitizeLogoSrc(src) {
   return s;
 }
 
+function sanitizeProjectImage(project) {
+  if (!project) return '';
+  let img = project.image || '';
+  if (img.includes('Rectangle 1.png') || !img) {
+    if (project.id === 'goldline') return './showcase/goldlineplastic.jpeg';
+    if (project.id === 'aia-uk') return './showcase/allindependentagencies.org.jpeg';
+    return './showcase/goldlineplastic.jpeg';
+  }
+  if (img.includes('Rectangle 1-1.png')) return './showcase/allindependentagenciesme.org.jpeg';
+  if (img.includes('Rectangle 1-2.png')) return './showcase/www.vxlmigration.com.au.jpeg';
+  if (img.includes('Rectangle 1-3.png')) return './showcase/neeshinc.png';
+  if (img.startsWith('./UI/') && !img.includes('Rectangle')) {
+    return img.replace('./UI/', './showcase/');
+  }
+  return img;
+}
+
 export function DataProvider({ children }) {
   // 1. Blogs State
   const [blogs, setBlogs] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.BLOGS);
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
     } catch (e) {
       console.warn('Failed to parse saved blogs from localStorage', e);
     }
@@ -51,7 +72,12 @@ export function DataProvider({ children }) {
   const [projects, setProjects] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.PROJECTS);
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((p) => ({ ...p, image: sanitizeProjectImage(p) }));
+        }
+      }
     } catch (e) {
       console.warn('Failed to parse saved projects from localStorage', e);
     }
@@ -116,16 +142,48 @@ export function DataProvider({ children }) {
     }
   }, [partners]);
 
+  // Synchronize across tabs in real-time
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      try {
+        if (e.key === STORAGE_KEYS.BLOGS && e.newValue) {
+          setBlogs(JSON.parse(e.newValue));
+        } else if (e.key === STORAGE_KEYS.PROJECTS && e.newValue) {
+          setProjects(JSON.parse(e.newValue));
+        } else if (e.key === STORAGE_KEYS.PORTAL && e.newValue) {
+          setPortalData(JSON.parse(e.newValue));
+        } else if (e.key === STORAGE_KEYS.PARTNERS && e.newValue) {
+          const parsed = JSON.parse(e.newValue);
+          setPartners(parsed.map((p) => ({ ...p, src: sanitizeLogoSrc(p.src) })));
+        }
+      } catch (err) {
+        console.warn('Error syncing storage event', err);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  // Helper lookups
+  const getBlogBySlug = (slug) => {
+    return findSlugMatch(blogs, slug);
+  };
+
+  const getRelatedBlogs = (currentBlog, limit = 3) => {
+    if (!currentBlog || !currentBlog.category) return [];
+    return blogs
+      .filter((b) => b.category === currentBlog.category && String(b.id) !== String(currentBlog.id))
+      .slice(0, limit);
+  };
+
   // Blog CRUD
   const addBlog = (newBlog) => {
     const blogWithId = {
       id: newBlog.id || `blog-${Date.now()}`,
-      date: newBlog.date || new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-      readTime: newBlog.readTime || '4 min read',
-      category: newBlog.category || 'General',
-      author: newBlog.author || 'MAD Editorial',
-      authorAvatar: newBlog.authorAvatar || './assets/mad_logo.png',
-      tags: Array.isArray(newBlog.tags) ? newBlog.tags : [],
+      publishDate: newBlog.publishDate || new Date().toISOString().split('T')[0],
+      category: newBlog.category || 'Web',
+      img: newBlog.img || newBlog.image || 'https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?q=80&w=1200&auto=format&fit=crop',
       ...newBlog
     };
     setBlogs((prev) => [blogWithId, ...prev]);
@@ -134,12 +192,22 @@ export function DataProvider({ children }) {
 
   const updateBlog = (id, updatedFields) => {
     setBlogs((prev) =>
-      prev.map((b) => (b.id === id ? { ...b, ...updatedFields } : b))
+      prev.map((b) => (String(b.id) === String(id) ? { ...b, ...updatedFields } : b))
     );
   };
 
   const deleteBlog = (id) => {
-    setBlogs((prev) => prev.filter((b) => b.id !== id));
+    setBlogs((prev) => prev.filter((b) => String(b.id) !== String(id)));
+  };
+
+  const moveBlog = (fromIndex, toIndex) => {
+    setBlogs((prev) => {
+      if (toIndex < 0 || toIndex >= prev.length) return prev;
+      const updated = [...prev];
+      const [movedItem] = updated.splice(fromIndex, 1);
+      updated.splice(toIndex, 0, movedItem);
+      return updated;
+    });
   };
 
   // Projects CRUD
@@ -153,7 +221,7 @@ export function DataProvider({ children }) {
       summary: newProject.summary || '',
       fullStory: newProject.fullStory || '',
       techTags: Array.isArray(newProject.techTags) ? newProject.techTags : ['React'],
-      image: newProject.image || './UI/Rectangle 1.png',
+      image: newProject.image || './showcase/allindependentagencies.org.jpeg',
       lighthouse: newProject.lighthouse || {
         performance: 95,
         accessibility: 95,
@@ -176,6 +244,16 @@ export function DataProvider({ children }) {
 
   const deleteProject = (id) => {
     setProjects((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const moveProject = (fromIndex, toIndex) => {
+    setProjects((prev) => {
+      if (toIndex < 0 || toIndex >= prev.length) return prev;
+      const updated = [...prev];
+      const [movedItem] = updated.splice(fromIndex, 1);
+      updated.splice(toIndex, 0, movedItem);
+      return updated;
+    });
   };
 
   // Portal Updates
@@ -213,6 +291,17 @@ export function DataProvider({ children }) {
     localStorage.removeItem(STORAGE_KEYS.PARTNERS);
   };
 
+  // Download blogsData.json
+  const downloadBlogsJson = () => {
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(blogs, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute('href', dataStr);
+    downloadAnchor.setAttribute('download', 'blogsData.json');
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+
   // Export JSON
   const exportAllJSON = () => {
     const fullData = {
@@ -246,12 +335,17 @@ export function DataProvider({ children }) {
         projects,
         portalData,
         partners,
+        getBlogBySlug,
+        getRelatedBlogs,
         addBlog,
         updateBlog,
         deleteBlog,
+        moveBlog,
+        downloadBlogsJson,
         addProject,
         updateProject,
         deleteProject,
+        moveProject,
         updatePortal,
         addPartner,
         updatePartner,
