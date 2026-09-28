@@ -211,17 +211,17 @@ export const projectsData = [
 ];
 
 export const clientLogos = [
-  { name: "Alliance of Independent Agencies", src: "./assets/client's LOGOS/Alliance Independent Agency Logo.png" },
-  { name: "Apply2XL", src: "./assets/client's LOGOS/apply2xl.png" },
-  { name: "Goldline Plastic", src: "./assets/client's LOGOS/glp-logo-Cuh0Loi3.png" },
-  { name: "Kingsford College", src: "./assets/client's LOGOS/kingsford.png" },
-  { name: "Neesh Inc", src: "./assets/client's LOGOS/neesh inc.webp" },
-  { name: "Neesh Spice", src: "./assets/client's LOGOS/neesh spice.webp" },
-  { name: "VXL Education", src: "./assets/client's LOGOS/VXL Logo.png" },
-  { name: "VXL Migration", src: "./assets/client's LOGOS/vxl migration.webp" },
-  { name: "The Madhatter", src: "./assets/client's LOGOS/MADHATTER logo.png" },
-  { name: "PappaRich", src: "./assets/client's LOGOS/PAPPARICH-logo.png" },
-  { name: "NCCYW", src: "./assets/client's LOGOS/nccyw.jpg" },
-  { name: "Swasthi / Surasa", src: "./assets/client's LOGOS/swasthi.png" },
-  { name: "Delta", src: "./assets/client's LOGOS/delta new.png" }
+  { name: "Alliance of Independent Agencies", src: "./assets/clients/alliance.png" },
+  { name: "Apply2XL", src: "./assets/clients/apply2xl.png" },
+  { name: "Goldline Plastic", src: "./assets/clients/goldline.png" },
+  { name: "Kingsford College", src: "./assets/clients/kingsford.png" },
+  { name: "Neesh Inc", src: "./assets/clients/neesh-inc.webp" },
+  { name: "Neesh Spice", src: "./assets/clients/neesh-spice.webp" },
+  { name: "VXL Education", src: "./assets/clients/vxl-logo.png" },
+  { name: "VXL Migration", src: "./assets/clients/vxl-migration.webp" },
+  { name: "The Madhatter", src: "./assets/clients/madhatter.png" },
+  { name: "PappaRich", src: "./assets/clients/papparich.png" },
+  { name: "NCCYW", src: "./assets/clients/nccyw.jpg" },
+  { name: "Swasthi / Surasa", src: "./assets/clients/swasthi.png" },
+  { name: "Delta", src: "./assets/clients/delta.png" }
 ];

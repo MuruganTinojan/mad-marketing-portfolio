@@ -75,8 +75,7 @@ export default function CaseStudyModal({ project, onClose }) {
               href={`https://${project.domain}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn btn-gradient"
-              style={{ padding: '10px 18px', fontSize: '14px', marginRight: '36px' }}
+              className="btn btn-gradient case-study-visit-btn"
             >
               Visit Live Site <i className="fa-solid fa-arrow-up-right-from-square"></i>
             </a>

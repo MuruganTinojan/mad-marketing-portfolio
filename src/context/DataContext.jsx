@@ -6,11 +6,34 @@ import { defaultPortalData } from '../data/defaultPortalData';
 const DataContext = createContext(null);
 
 const STORAGE_KEYS = {
-  BLOGS: 'mad_blogs_v1',
-  PROJECTS: 'mad_projects_v1',
-  PORTAL: 'mad_portal_v1',
-  PARTNERS: 'mad_partners_v1'
+  BLOGS: 'mad_blogs_v2',
+  PROJECTS: 'mad_projects_v2',
+  PORTAL: 'mad_portal_v2',
+  PARTNERS: 'mad_partners_v2'
 };
+
+function sanitizeLogoSrc(src) {
+  if (!src) return '';
+  if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:')) return src;
+  let s = src.replace(/^\//, './');
+  if (!s.startsWith('./')) s = `./${s}`;
+  if (s.includes("client's LOGOS")) {
+    s = s.replace("./assets/client's LOGOS/Alliance Independent Agency Logo.png", "./assets/clients/alliance.png")
+         .replace("./assets/client's LOGOS/apply2xl.png", "./assets/clients/apply2xl.png")
+         .replace("./assets/client's LOGOS/glp-logo-Cuh0Loi3.png", "./assets/clients/goldline.png")
+         .replace("./assets/client's LOGOS/kingsford.png", "./assets/clients/kingsford.png")
+         .replace("./assets/client's LOGOS/neesh inc.webp", "./assets/clients/neesh-inc.webp")
+         .replace("./assets/client's LOGOS/neesh spice.webp", "./assets/clients/neesh-spice.webp")
+         .replace("./assets/client's LOGOS/VXL Logo.png", "./assets/clients/vxl-logo.png")
+         .replace("./assets/client's LOGOS/vxl migration.webp", "./assets/clients/vxl-migration.webp")
+         .replace("./assets/client's LOGOS/MADHATTER logo.png", "./assets/clients/madhatter.png")
+         .replace("./assets/client's LOGOS/PAPPARICH-logo.png", "./assets/clients/papparich.png")
+         .replace("./assets/client's LOGOS/nccyw.jpg", "./assets/clients/nccyw.jpg")
+         .replace("./assets/client's LOGOS/swasthi.png", "./assets/clients/swasthi.png")
+         .replace("./assets/client's LOGOS/delta new.png", "./assets/clients/delta.png");
+  }
+  return s;
+}
 
 export function DataProvider({ children }) {
   // 1. Blogs State
@@ -50,11 +73,14 @@ export function DataProvider({ children }) {
   const [partners, setPartners] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.PARTNERS);
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.map((p) => ({ ...p, src: sanitizeLogoSrc(p.src) }));
+      }
     } catch (e) {
       console.warn('Failed to parse saved partners from localStorage', e);
     }
-    return initialPartners;
+    return initialPartners.map((p) => ({ ...p, src: sanitizeLogoSrc(p.src) }));
   });
 
   // Save to LocalStorage on change
