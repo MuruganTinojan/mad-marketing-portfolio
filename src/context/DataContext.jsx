@@ -45,7 +45,7 @@ function sanitizeProjectImage(project) {
     return './showcase/goldlineplastic.jpeg';
   }
   if (img.includes('Rectangle 1-1.png')) return './showcase/allindependentagenciesme.org.jpeg';
-  if (img.includes('Rectangle 1-2.png')) return './showcase/www.vxlmigration.com.au.jpeg';
+  if (img.includes('Rectangle 1-2.png')) return './showcase/vxlmigration.com.au.jpeg';
   if (img.includes('Rectangle 1-3.png')) return './showcase/neeshinc.png';
   if (img.startsWith('./UI/') && !img.includes('Rectangle')) {
     return img.replace('./UI/', './showcase/');

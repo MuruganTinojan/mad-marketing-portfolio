@@ -65,7 +65,7 @@ export const projectsData = [
     summary: "B2B marketplace for the study abroad sector featuring complex agent portals, automated onboarding flows, and scalable infrastructure.",
     fullStory: "A massive multi-tenant platform empowering educational recruiters across multiple continents. Features dynamic commission reconciliation, automated partner onboarding checklists, verification workflows, and secure institutional databases.",
     techTags: ["React", "B2B Platform", "Agent Portal", "Automation"],
-    image: "./showcase/www.apply2xl.com.jpeg",
+    image: "./showcase/apply2xl.jpeg",
     lighthouse: {
       performance: 94,
       accessibility: 95,
@@ -103,7 +103,7 @@ export const projectsData = [
     summary: "Fully automated booking and client onboarding platform with direct calendar synchronization, online payments, and email invites.",
     fullStory: "Built for certified Australian migration practitioners. The platform integrates calendar schedules with payment validation, auto-provisioning secure consultation video links and preparatory intake questionnaires prior to client meetings.",
     techTags: ["WordPress", "Calendar Sync", "Auto Meetings", "Retainer Client"],
-    image: "./showcase/www.vxlmigration.com.au.jpeg",
+    image: "./showcase/vxlmigration.com.au.jpeg",
     lighthouse: {
       performance: 96,
       accessibility: 97,
@@ -141,7 +141,7 @@ export const projectsData = [
     summary: "UX and SEO-driven educational website featuring conversion-optimized program pages and structured student inquiry funnels.",
     fullStory: "A comprehensive digital overhaul for Kingsford College of Business & Technology. Structured around conversion psychology, student eligibility quizzes, and multi-tier department landing pages designed to rank on high-volume keywords.",
     techTags: ["UX Audit", "SEO Lead Gen", "Funnels", "Education"],
-    image: "./showcase/kingsford.jpeg",
+    image: "./showcase/kingsford.png",
     lighthouse: {
       performance: 95,
       accessibility: 97,
@@ -160,7 +160,7 @@ export const projectsData = [
     summary: "Premium web presence and brand concept mapping the heritage, craft, and organic narrative of high-grade Sri Lankan spice exports.",
     fullStory: "Bridging Ceylon's centuries-old spice cultivation craft with discerning culinary markets in Canada. We produced a visually rich, narrative-driven digital journey detailing farm origins, ethical harvest, and lab certifications.",
     techTags: ["Branding", "Storytelling", "Exporters", "Visual Heritage"],
-    image: "./showcase/www.neeshspice.ca.jpeg",
+    image: "./showcase/neeshspice.jpeg",
     lighthouse: {
       performance: 97,
       accessibility: 96,
@@ -179,7 +179,7 @@ export const projectsData = [
     summary: "Pro-bono digital transformation providing a modern, accessible, responsive, and SEO-optimized website for child welfare advocacy.",
     fullStory: "As part of our commitment to social impact, MAD Marketing contributed full design and engineering pro-bono to rebuild the digital voice of one of Sri Lanka's oldest and most respected child welfare councils. Adheres strictly to WCAG 2.1 AA accessibility guidelines.",
     techTags: ["Pro-Bono", "Accessibility", "SEO", "Responsive"],
-    image: "./showcase/www.nccyw.org.jpeg",
+    image: "./showcase/nccyw.png",
     lighthouse: {
       performance: 98,
       accessibility: 100,
@@ -198,7 +198,7 @@ export const projectsData = [
     summary: "Brand narrative, domain resolution, copyright dispute handling, and fully custom website for a premium exporter of custom hats.",
     fullStory: "MAD Marketing handled intellectual property domain negotiations and structured an immersive digital catalog for an avant-garde apparel label. Focuses on artisanal craftsmanship and global bespoke order processing.",
     techTags: ["Brand Narrative", "IP Dispute", "Domain Setup", "Fashion Web"],
-    image: "./showcase/www.themadhatter.lk.jpeg",
+    image: "./showcase/madhatter.png",
     lighthouse: {
       performance: 96,
       accessibility: 95,
@@ -214,14 +214,14 @@ export const showcaseGallery = [
   { label: "The Alliance of Independent Agencies (UK)", file: "./showcase/allindependentagencies.org.jpeg" },
   { label: "VXL Education (Sri Lanka)", file: "./showcase/www.vxl.lk.jpeg" },
   { label: "Goldline Plastic (Sri Lanka)", file: "./showcase/goldlineplastic.jpeg" },
-  { label: "Apply2XL Global Marketplace", file: "./showcase/www.apply2xl.com.jpeg" },
+  { label: "Apply2XL Global Marketplace", file: "./showcase/apply2xl.jpeg" },
   { label: "AIA Middle East (GCC)", file: "./showcase/allindependentagenciesme.org.jpeg" },
-  { label: "VXL Migration & Education (Australia)", file: "./showcase/www.vxlmigration.com.au.jpeg" },
+  { label: "VXL Migration & Education (Australia)", file: "./showcase/vxlmigration.com.au.jpeg" },
   { label: "Neesh Inc IT Consulting (Canada)", file: "./showcase/neeshinc.png" },
-  { label: "Kingsford College (Sri Lanka)", file: "./showcase/kingsford.jpeg" },
-  { label: "Neesh Spice Exporters (Canada)", file: "./showcase/www.neeshspice.ca.jpeg" },
-  { label: "NCCYW National Council (Sri Lanka)", file: "./showcase/www.nccyw.org.jpeg" },
-  { label: "The Madhatter Bespoke Apparel (Sri Lanka)", file: "./showcase/www.themadhatter.lk.jpeg" },
+  { label: "Kingsford College (Sri Lanka)", file: "./showcase/kingsford.png" },
+  { label: "Neesh Spice Exporters (Canada)", file: "./showcase/neeshspice.jpeg" },
+  { label: "NCCYW National Council (Sri Lanka)", file: "./showcase/nccyw.png" },
+  { label: "The Madhatter Bespoke Apparel (Sri Lanka)", file: "./showcase/madhatter.png" },
   { label: "AIA Deal House Mockup (Frame 34)", file: "./showcase/Frame 34.png" }
 ];
 
