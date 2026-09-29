@@ -9,7 +9,7 @@ const DataContext = createContext(null);
 const STORAGE_KEYS = {
   BLOGS: 'mad_blogs_v3',
   PROJECTS: 'mad_projects_v2',
-  PORTAL: 'mad_portal_v2',
+  PORTAL: 'mad_portal_v3',
   PARTNERS: 'mad_partners_v2'
 };
 
@@ -53,6 +53,27 @@ function sanitizeProjectImage(project) {
   return img;
 }
 
+// Migrate old broken PNG icon paths to SVG tokens
+const BROKEN_ICON_MAP = {
+  './4.png': '__svg_0__',
+  './5.png': '__svg_1__',
+  './6.png': '__svg_2__',
+  './7.png': '__svg_2__',
+  '4.png': '__svg_0__',
+  '5.png': '__svg_1__',
+  '7.png': '__svg_2__',
+};
+function sanitizePortalSolutions(data) {
+  if (!data || !Array.isArray(data.solutions)) return data;
+  return {
+    ...data,
+    solutions: data.solutions.map((sol, idx) => ({
+      ...sol,
+      icon: BROKEN_ICON_MAP[sol.icon] || sol.icon || `__svg_${idx % 3}__`
+    }))
+  };
+}
+
 export function DataProvider({ children }) {
   // 1. Blogs State
   const [blogs, setBlogs] = useState(() => {
@@ -88,7 +109,7 @@ export function DataProvider({ children }) {
   const [portalData, setPortalData] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.PORTAL);
-      if (saved) return JSON.parse(saved);
+      if (saved) return sanitizePortalSolutions(JSON.parse(saved));
     } catch (e) {
       console.warn('Failed to parse saved portal data from localStorage', e);
     }
