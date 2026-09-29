@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useData } from '../context/DataContext';
 
 export default function WebDigitalSection({ onOpenCaseStudy }) {
@@ -9,6 +9,7 @@ export default function WebDigitalSection({ onOpenCaseStudy }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isGridExpanded, setIsGridExpanded] = useState(false);
   const [isFading, setIsFading] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(true);
 
   // Touch swipe tracking for mobile gestures
   const touchStartX = useRef(null);
@@ -34,6 +35,7 @@ export default function WebDigitalSection({ onOpenCaseStudy }) {
   const changeSlide = (newIndex) => {
     if (newIndex === activeIndex || filteredProjects.length === 0) return;
     setIsFading(true);
+    setImageLoaded(false);
     setTimeout(() => {
       setActiveIndex(newIndex);
       setIsFading(false);
@@ -203,17 +205,38 @@ export default function WebDigitalSection({ onOpenCaseStudy }) {
                   <i className="fa-solid fa-arrow-down-up-across-line"></i> Scroll preview
                 </span>
               </div>
-              <div className="browser-scroll-viewport">
+              <div className="browser-scroll-viewport" style={{ position: 'relative' }}>
+                {/* Skeleton shown while new image loads */}
+                {!imageLoaded && (
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    background: 'linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%)',
+                    backgroundSize: '200% 100%',
+                    animation: 'shimmer 1.2s infinite',
+                    zIndex: 2,
+                    borderRadius: '0 0 8px 8px'
+                  }} />
+                )}
                 <img
+                  key={activeProject.image}
                   src={activeProject.image}
                   alt={`${activeProject.title} Live Preview`}
                   className="browser-mockup-img"
-                  loading="lazy"
+                  onLoad={() => setImageLoaded(true)}
                   onError={(e) => {
                     e.target.src = './showcase/allindependentagencies.org.jpeg';
+                    setImageLoaded(true);
                   }}
+                  style={{ opacity: imageLoaded ? 1 : 0, transition: 'opacity 0.25s ease' }}
                 />
               </div>
+              {/* Preload next and prev images so switching is instant */}
+              {filteredProjects.length > 1 && [
+                filteredProjects[(activeIndex + 1) % filteredProjects.length]?.image,
+                filteredProjects[(activeIndex - 1 + filteredProjects.length) % filteredProjects.length]?.image
+              ].filter(Boolean).map((src) => (
+                <img key={src} src={src} alt="" aria-hidden="true" style={{ display: 'none' }} />
+              ))}
             </div>
           </div>
         )}

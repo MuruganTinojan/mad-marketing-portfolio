@@ -28,19 +28,19 @@ export const defaultPortalData = {
   solutions: [
     {
       id: "sol-1",
-      icon: "./4.png",
+      icon: "__svg_0__",
       title: "Custom API & Plugin Development",
       info: "Rebuilding payment gateways, merchant integration models, and automated platform triggers that hook directly into Shopify, WooCommerce, and CRM ecosystems."
     },
     {
       id: "sol-2",
-      icon: "./5.png",
+      icon: "__svg_1__",
       title: "B2B Agent & Member Marketplace Portals",
       info: "Platform solutions built with role-based dashboard architectures, dynamic subscriptions, document management pipelines, and onboarding checklists."
     },
     {
       id: "sol-3",
-      icon: "./7.png",
+      icon: "__svg_2__",
       title: "Automated Booking & Meeting Engines",
       info: "Direct synchronizations with Google/Outlook calendars, auto-generating dynamic meeting channels, notifications, and client routing models."
     }
